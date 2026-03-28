@@ -64,7 +64,7 @@ Este proyecto está siendo desarrollado por:
 
 * **[José Fabián Medina Dávalos]** - [https://github.com/Jfmedina-cyber]
 * **[Sol Arami Fernández Vargas]** - [https://github.com/SolFV]
-* **[Gabriela Belén Orrego Arzamendia]** [Enlace a su GitHub o LinkedIn]
+* **[Gabriela Belén Orrego Arzamendia]** [https://github.com/gabriela-orrego]
 
 ---
 
