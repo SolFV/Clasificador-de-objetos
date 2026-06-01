@@ -18,8 +18,7 @@ El proyecto ha superado con éxito las fases iniciales de diseño esquemático, 
 
 **Próximos pasos:**
 1. **Servidor privado e IA:** Programar el servidor privado y configurar el flujo de comunicación con la Inteligencia Artificial.
-2. **Comunicación de la placa:** Implementar en el ESP32-S3 el envío de imágenes (HTTP POST) y la recepción de respuestas JSON.
-3. **Pruebas integradas:** Realizar los ensayos finales en la cinta usando el sensor infrarrojo (JSumo JS40F) y el driver de potencia (DRV8873).
+2. **Pruebas integradas:** Realizar los ensayos finales en la cinta usando el sensor infrarrojo (JSumo JS40F) y el driver de potencia (DRV8873).
 ---
 
 ## ⚙️ ¿Cómo Funciona? (Flujo Conceptual del Algoritmo)
