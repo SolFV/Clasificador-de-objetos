@@ -1,73 +1,70 @@
 # 🏭 Cinta Transportadora Inteligente - Clasificador de Objetos con IA e IoT
 
-![Status: WIP](https://img.shields.io/badge/Status-Work_In_Progress-orange)
-![License: MIT](https://img.shields.io/badge/License-MIT-blue)
-![Hardware: ESP32-S3](https://img.shields.io/badge/Hardware-ESP32--S3-success)
+![Status](https://img.shields.io/badge/Status-Advanced__Testing-green)
+![Hardware](https://img.shields.io/badge/Hardware-Assembled__&__Tested-blue)
+![Platform](https://img.shields.io/badge/Platform-ESP32--S3-orange)
+![IoT](https://img.shields.io/badge/IoT-n8n__Webhook-purple)
 
-## 📖 Descripción del Proyecto
-
-Este proyecto consiste en el diseño, fabricación e implementación de una placa electrónica (PCB) basada en el microcontrolador **ESP32-S3**, destinada al control y supervisión de una cinta transportadora inteligente. 
-
-El sistema tiene como propósito principal la **clasificación automatizada de objetos** integrando tecnologías de visión artificial e Internet de las Cosas (IoT). 
-
-### ⚙️ ¿Cómo funciona?
-1. **Captura:** A través de un módulo de cámara (OV5640), el hardware captura imágenes de los elementos que pasan por la cinta.
-2. **Procesamiento IoT:** Las imágenes se transmiten vía WiFi (mediante un webhook) a un servidor externo.
-3. **Inferencia IA:** Un algoritmo de inteligencia artificial en el servidor evalúa si el objeto es correcto o defectuoso.
-4. **Acción:** La PCB recibe la decisión del servidor y acciona un servomotor para desviar los elementos anómalos, mientras gestiona la velocidad y el estado del motor DC principal de la cinta.
+Este repositorio contiene el firmware, los diseños de hardware y la documentación para el sistema embebido inteligente de clasificación automatizada de objetos en una cinta transportadora. El proyecto integra visión artificial en el borde (Edge Computing), conectividad IoT y control secuencial en tiempo real.
 
 ---
 
-## 🚧 Estado del Proyecto: En Desarrollo (WIP)
+## ⚡ Estado Actual del Proyecto: Pruebas de Integración y Validation
+El proyecto ha superado con éxito las fases iniciales de diseño esquemático, ruteo en KiCad, fabricación y ensamblaje físico de la PCB en laboratorio. Actualmente, nos encontramos en la **fase de validación final e integración total de software/hardware**, habiendo verificado el correcto funcionamiento aislado de los siguientes subsistemas:
 
-Actualmente, el proyecto se encuentra en la **Fase de Diseño de Hardware**. Estamos utilizando **KiCad** para finalizar el ruteo de la PCB (separando cuidadosamente las etapas de potencia y señal) y preparándola para su impresión y posterior ensamblaje.
+* **Adquisición Óptica:** Inicialización exitosa de la cámara OV5640, operando de manera continua para capturar fotogramas QVGA almacenados en la PSRAM.
+* **Conectividad y Servidor de IA:** Conexión WiFi estable del ESP32-S3 y envío exitoso del payload en formato síncrono (Base64 + binario JPEG) hacia el Webhook de n8n alojado en un servidor VPS. Recepción correcta de las respuestas del modelo de IA dentro de los márgenes de latencia previstos.
+* **Clasificación Mecánica:** Respuesta precisa del servomotor a las instrucciones de la IA (giros de 90° o 180° según la anomalía detectada) a través de canales PWM independientes y respetando el tiempo de retención programado de 10 segundos.
 
----
-
-## ✨ Características Principales
-
-* **Control de Motores Integrado:** Gestión de motor DC de 6V (800RPM) mediante el driver DRV8873-Q1 y control de servomotor para clasificación física.
-* **Visión Artificial embebida:** Integración de cámara para captura de imágenes en tiempo real.
-* **Comunicación de Baja Latencia:** Transmisión de datos mediante webhooks sobre WiFi para integrarse con modelos de Deep Learning externos.
-* **Diseño Industrial:** PCB diseñada considerando prevención de fallas térmicas y aislamiento entre etapas de señal y potencia.
+**Próximos pasos inmediatos:** Ensayos integrados en la cinta con el sensor de proximidad infrarrojo **JSumo JS40F** y el motor DC impulsado por el driver de potencia **DRV8873** para cerrar completamente el lazo de automatización.
 
 ---
 
-## 🛠️ Hardware y Lista de Materiales (BOM Principal)
+## ⚙️ ¿Cómo Funciona? (Flujo Conceptual del Algoritmo)
+El lazo cerrado de control y toma de decisiones distribuidas opera de la siguiente manera:
 
-El diseño de la PCB se basa en los siguientes componentes críticos:
-
-| Componente | Especificación / Modelo | Función |
-| :--- | :--- | :--- |
-| **Microcontrolador (MCU)** | ESP32-S3-WROOM-2-N32R16V | Procesamiento, WiFi y control general |
-| **Driver de Motor** | Texas Instruments DRV8873-Q1 | Control del motor DC de la cinta |
-| **Regulador LDO** | LM1117MPX-3.3 | Alimentación estable a 3.3V |
-| **Motor DC** | NOVAMAX 6V 5.75A 800RPM | Impulso de la cinta transportadora |
-| **Cámara** | OV5640 (Color CMOS) | Captura de imágenes para clasificación |
-
-*(Para ver la lista completa de componentes pasivos como capacitores cerámicos SMD 0805 y resistencias, consultar el archivo BOM en el repositorio).*
+1. **Transporte y Detección:** El motor DC principal desplaza los objetos sobre la cinta transportadora mediante modulación PWM gestionada por el driver de potencia DRV8873. Al interrumpirse el haz del sensor infrarrojo de proximidad (*JSumo JS40F*), el ESP32-S3 detiene la cinta inmediatamente.
+2. **Captura en Borde:** La cámara OV5640 se activa de forma síncrona, captura el fotograma del objeto en la PSRAM, realiza la compresión a formato JPEG y codifica el archivo en Base64 para optimizar la transmisión.
+3. **Inferencia Remota (IoT):** El ESP32-S3 realiza una petición síncrona HTTP POST de tipo *Multipart* dirigida al webhook de **n8n** en la nube. El servidor procesa la imagen a través de un algoritmo de Inteligencia Artificial para determinar el estado o color del objeto y retorna una estructura JSON.
+4. **Actuación y Clasificación:** El microcontrolador parsea la respuesta JSON recibida:
+   * **Anomalía Tipo A (Rojo):** Mueve el servomotor a 90° por un lapso de 10 segundos para desviar el objeto al contenedor correspondiente.
+   * **Anomalía Tipo B (Amarillo):** Mueve el servomotor a 180° por un lapso de 10 segundos.
+   * **Objeto Correcto (Verde):** El servomotor permanece en reposo (0°).
+5. **Reanudación:** Cumplido el tiempo de actuación, el servomotor retorna a su posición inicial, la cinta transportadora vuelve a encenderse y el sistema se reconfigura para esperar el siguiente elemento.
 
 ---
 
-## 💻 Tecnologías / Stack
+## 🛠️ Arquitectura de Hardware y BOM (Lista de Materiales Principales)
+El diseño electrónico de la PCB fue optimizado mediante un plano de masa continuo y una estricta separación física entre las trazas de **potencia** (motores y actuadores) y **señal** (líneas de datos de la cámara y líneas de control del microcontrolador) para mitigar ruidos electromagnéticos parásitos.
 
-* **Hardware / EDA:** KiCad
-* **Firmware MCU:** C/C++
-* **Comunicaciones:** WiFi / Webhooks
-* **Backend / IA:** (Servidor externo)
+### Componentes Clave de la Placa:
+| Descripción | Cantidad | Función Principal |
+| :--- | :---: | :--- |
+| **ESP32-S3-WROOM-2-N32R16V** | 1 | Microcontrolador central (Núcleo del sistema, WiFi, manejo de PSRAM). |
+| **Módulo de Cámara OV5640 DVP** | 2 | Captura de imágenes con interfaz digital de video en paralelo. |
+| **Driver de Motor DRV8873SPWPRQ1** | 2 | Controlador de puente H de grado automotriz para el motor DC de la cinta. |
+| **Conector USB Tipo C (16 pines SMD)** | 1 | Interfaz de alimentación y programación general de la placa. |
+| **Regulador LDO LM1117MPX-3.3/NOPB** | 2 | Regulación de voltaje lineal para la etapa lógica digital de 3.3V. |
+| **JSumo JS40F** | 1 | Sensor infrarrojo digital para la detección precisa del paso del objeto. |
+
+### Tecnologías de Montaje y Manufactura Utilizadas:
+* Aplicación homogénea de pasta de soldar mediante esténcil de precisión.
+* Soldadura de componentes SMD mediante placa de calor (*Reflow*) y estación de aire caliente.
+* Montaje manual de componentes de inserción (THT) con control térmico.
+* Inspección visual y validación óptica/térmica con microscopio estereofónico de laboratorio.
 
 ---
 
-## 👥 Autores y Colaboradores
-
-Este proyecto está siendo desarrollado por:
-
-* **[José Fabián Medina Dávalos]** - [https://github.com/Jfmedina-cyber]
-* **[Sol Arami Fernández Vargas]** - [https://github.com/SolFV]
-* **[Gabriela Belén Orrego Arzamendia]** [https://github.com/gabriela-orrego]
+## 📁 Estructura del Repositorio
+* `/Hardware`: Contiene el proyecto completo desarrollado en KiCad (esquemáticos, layout de la PCB de 2 capas, archivos Gerber y planos finales de fabricación).
+* `/Software`: Código fuente en C++/Arduino optimizado para el ESP32-S3, manejo de colas de tareas, captura de imágenes con `esp_camera`, y rutinas síncronas HTTP.
+* `/BOM`: Archivo expandido `BOM.csv` con los costos detallados, números de parte (MPN) y enlaces a distribuidores de los componentes electrónicos implementados.
 
 ---
 
-## 📄 Licencia
+## 👥 Autores (MCT - 2026)
+* **José Fabián Medina Dávalos** - [jfmedina@fiuna.edu.py](mailto:jfmedina@fiuna.edu.py) - +595 994 945 088
+* **Sol Aramí Fernández Vargas** - [solfernandez@fiuna.edu.py](mailto:solfernandez@fiuna.edu.py) - +595 982 152 869
+* **Gabriela Belén Orrego Arzamendia** - [gorrego@fiuna.edu.py](mailto:gorrego@fiuna.edu.py) - +595 983 141 917
 
-Este proyecto está bajo la Licencia **MIT**. Consulta el archivo `LICENSE` para más detalles.
+*Facultad de Ingeniería, Universidad Nacional de Asunción (FIUNA)*
