@@ -13,7 +13,7 @@ Este repositorio contiene el firmware, los diseños de hardware y la documentaci
 El proyecto ha superado con éxito las fases iniciales de diseño esquemático, ruteo en KiCad, fabricación y ensamblaje físico de la PCB en laboratorio. Actualmente, nos encontramos en la **fase de validación final e integración total de software/hardware**, habiendo verificado el correcto funcionamiento aislado de los siguientes subsistemas:
 
 * **Adquisición Óptica:** Inicialización exitosa de la cámara OV5640, operando de manera continua para capturar fotogramas QVGA almacenados en la PSRAM.
-* **Conectividad y Servidor de IA:** Conexión WiFi estable del ESP32-S3 y envío exitoso del payload en formato síncrono (Base64 + binario JPEG) hacia el Webhook de n8n alojado en un servidor VPS. Recepción correcta de las respuestas del modelo de IA dentro de los márgenes de latencia previstos.
+* **Conectividad y Servidor de IA:** Conexión WiFi estable del ESP32-S3 y envío exitoso del payload en formato síncrono (Base64 + binario JPEG) hacia el Webhook alojado en un servidor privado. Recepción correcta de las respuestas del modelo de IA dentro de los márgenes de latencia previstos.
 * **Clasificación Mecánica:** Respuesta precisa del servomotor a las instrucciones de la IA (giros de 90° o 180° según la anomalía detectada) a través de canales PWM independientes y respetando el tiempo de retención programado de 10 segundos.
 
 **Próximos pasos inmediatos:** Ensayos integrados en la cinta con el sensor de proximidad infrarrojo **JSumo JS40F** y el motor DC impulsado por el driver de potencia **DRV8873** para cerrar completamente el lazo de automatización.
@@ -25,7 +25,7 @@ El lazo cerrado de control y toma de decisiones distribuidas opera de la siguien
 
 1. **Transporte y Detección:** El motor DC principal desplaza los objetos sobre la cinta transportadora mediante modulación PWM gestionada por el driver de potencia DRV8873. Al interrumpirse el haz del sensor infrarrojo de proximidad (*JSumo JS40F*), el ESP32-S3 detiene la cinta inmediatamente.
 2. **Captura en Borde:** La cámara OV5640 se activa de forma síncrona, captura el fotograma del objeto en la PSRAM, realiza la compresión a formato JPEG y codifica el archivo en Base64 para optimizar la transmisión.
-3. **Inferencia Remota (IoT):** El ESP32-S3 realiza una petición síncrona HTTP POST de tipo *Multipart* dirigida al webhook de **n8n** en la nube. El servidor procesa la imagen a través de un algoritmo de Inteligencia Artificial para determinar el estado o color del objeto y retorna una estructura JSON.
+3. **Inferencia Remota (IoT):** El ESP32-S3 realiza una petición síncrona HTTP POST de tipo *Multipart* dirigida al webhook en la nube. El servidor procesa la imagen a través de un algoritmo de Inteligencia Artificial para determinar el estado o color del objeto y retorna una estructura JSON.
 4. **Actuación y Clasificación:** El microcontrolador parsea la respuesta JSON recibida:
    * **Anomalía Tipo A (Rojo):** Mueve el servomotor a 90° por un lapso de 10 segundos para desviar el objeto al contenedor correspondiente.
    * **Anomalía Tipo B (Amarillo):** Mueve el servomotor a 180° por un lapso de 10 segundos.
