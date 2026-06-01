@@ -3,7 +3,7 @@
 ![Status](https://img.shields.io/badge/Status-Advanced__Testing-green)
 ![Hardware](https://img.shields.io/badge/Hardware-Assembled__&__Tested-blue)
 ![Platform](https://img.shields.io/badge/Platform-ESP32--S3-orange)
-![IoT](https://img.shields.io/badge/IoT-n8n__Webhook-purple)
+
 
 Este repositorio contiene el firmware, los diseños de hardware y la documentación para el sistema embebido inteligente de clasificación automatizada de objetos en una cinta transportadora. El proyecto integra visión artificial en el borde (Edge Computing), conectividad IoT y control secuencial en tiempo real.
 
