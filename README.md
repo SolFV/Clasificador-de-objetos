@@ -16,8 +16,10 @@ El proyecto ha superado con éxito las fases iniciales de diseño esquemático, 
 * **Conectividad y Servidor de IA:** Conexión WiFi estable del ESP32-S3 y envío exitoso del payload en formato síncrono (Base64 + binario JPEG) hacia el Webhook alojado en un servidor privado. Recepción correcta de las respuestas del modelo de IA dentro de los márgenes de latencia previstos.
 * **Clasificación Mecánica:** Respuesta precisa del servomotor a las instrucciones de la IA (giros de 90° o 180° según la anomalía detectada) a través de canales PWM independientes y respetando el tiempo de retención programado de 10 segundos.
 
-**Próximos pasos inmediatos:** Ensayos integrados en la cinta con el sensor de proximidad infrarrojo **JSumo JS40F** y el motor DC impulsado por el driver de potencia **DRV8873** para cerrar completamente el lazo de automatización.
-
+**Próximos pasos:**
+1. **Servidor privado e IA:** Programar el servidor privado y configurar el flujo de comunicación con la Inteligencia Artificial.
+2. **Comunicación de la placa:** Implementar en el ESP32-S3 el envío de imágenes (HTTP POST) y la recepción de respuestas JSON.
+3. **Pruebas integradas:** Realizar los ensayos finales en la cinta usando el sensor infrarrojo (JSumo JS40F) y el driver de potencia (DRV8873).
 ---
 
 ## ⚙️ ¿Cómo Funciona? (Flujo Conceptual del Algoritmo)
