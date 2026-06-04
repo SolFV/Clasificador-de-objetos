@@ -1,0 +1,29 @@
+=======================================
+
+    DIAGNÓSTICO DE PSRAM ESP32-S3      
+
+=======================================
+
+✅ PSRAM dectectada por el sistema.
+
+💾 Tamaño Total de PSRAM: 8388608 bytes (8.00 MB)
+
+💾 PSRAM Libre actual:    8386096 bytes
+
+
+
+🧠 Solicitando bloque de 1048576 bytes en la PSRAM...
+
+✅ Bloque asignado con éxito.
+
+✍️  Escribiendo datos de prueba en la PSRAM...
+
+🔍 Verificando integridad de los datos almacenados...
+
+=======================================
+
+RESULTADO: PSRAM PERFECTA Y OPERATIVAA! 🎉
+
+El problema de tu cámara es puramente eléctrico o de inicialización del sensor.
+
+=======================================

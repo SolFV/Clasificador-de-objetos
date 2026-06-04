@@ -1,0 +1,79 @@
+void setup() {
+  Serial.begin(115200);
+  delay(2000);
+  Serial.println("\n=======================================");
+  Serial.println("    DIAGNÓSTICO DE PSRAM ESP32-S3      ");
+  Serial.println("=======================================");
+
+  // 1. Verificar si el compilador y el hardware detectan la PSRAM
+  if (!psramFound()) {
+    Serial.println("❌ ERROR CRÍTICO: El hardware NO detecta la PSRAM.");
+    Serial.println("👉 Causas posibles:");
+    Serial.println("   1. La placa no tiene chip de PSRAM físico.");
+    Serial.println("   2. En 'Tools', la placa requiere 'Quad PSRAM' en vez de 'OPI PSRAM'. ");
+    return;
+  }
+
+  Serial.println("✅ PSRAM dectectada por el sistema.");
+
+  // 2. Mostrar capacidades de memoria
+  uint32_t total_psram = (uint32_t)ESP.getPsramSize();
+  uint32_t free_psram  = (uint32_t)ESP.getFreePsram();
+  
+  Serial.printf("💾 Tamaño Total de PSRAM: %u bytes (%.2f MB)\n", total_psram, (float)total_psram / (1024.0 * 1024.0));
+  Serial.printf("💾 PSRAM Libre actual:    %u bytes\n", free_psram);
+
+  if (total_psram == 0) {
+    Serial.println("❌ ERROR: El tamaño reportado es 0 bytes. La configuración en el IDE es errónea.");
+    return;
+  }
+
+  // 3. Test de estrés: Intentar reservar, escribir y leer 1 MB de memoria exacta
+  uint32_t tamano_test = 1024 * 1024; // 1 Megabyte
+  Serial.printf("\n🧠 Solicitando bloque de %u bytes en la PSRAM...\n", tamano_test);
+
+  // Forzamos la asignación específicamente en la PSRAM externa
+  char* buffer = (char*)ps_malloc(tamano_test);
+
+  if (buffer == NULL) {
+    Serial.println("❌ ERROR: No hay suficiente espacio continuo o la PSRAM falló al asignar memoria.");
+    return;
+  }
+  Serial.println("✅ Bloque asignado con éxito.");
+
+  // Escritura de patrones de prueba
+  Serial.println("✍️  Escribiendo datos de prueba en la PSRAM...");
+  for (uint32_t i = 0; i < tamano_test; i++) {
+    buffer[i] = (i % 26) + 'A'; // Llena el buffer con letras A-Z cíclicamente
+  }
+
+  // Lectura y verificación de integridad
+  Serial.println("🔍 Verificando integridad de los datos almacenados...");
+  bool PSRAM_ok = true;
+  for (uint32_t i = 0; i < tamano_test; i++) {
+    char esperado = (i % 26) + 'A';
+    if (buffer[i] != esperado) {
+      Serial.printf("❌ CORRUPCIÓN DE DATOS! En byte %u se esperaba '%c' pero se leyó '%c'\n", i, esperado, buffer[i]);
+      PSRAM_ok = false;
+      break;
+    }
+  }
+
+  // Liberar la memoria de prueba inmediatamente
+  free(buffer);
+
+  // 4. Veredicto Final
+  Serial.println("=======================================");
+  if (PSRAM_ok) {
+    Serial.println("RESULTADO: PSRAM PERFECTA Y OPERATIVAA! 🎉");
+    Serial.println("El problema de tu cámara es puramente eléctrico o de inicialización del sensor.");
+  } else {
+    Serial.println("❌ RESULTADO: PSRAM DEFECTUOSA O INESTABLE ❌");
+    Serial.println("Prueba bajando la velocidad de la CPU a 160MHz o cambiando a 'Quad PSRAM'.");
+  }
+  Serial.println("=======================================");
+}
+
+void loop() {
+  // Nada por aquí
+}

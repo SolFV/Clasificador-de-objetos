@@ -1,0 +1,10 @@
+== OV5640 streaming ===
+Camara OK.
+Sensor configurado.
+Warm-up OK.
+Conectando WiFi...........
+>>> http://192.168.100.197/        (pagina con video)
+>>> http://192.168.100.197/capture (una foto JPEG)
+>>> http://192.168.100.197/stream  (raw MJPEG)
+Servidor HTTP arrancado.
+[stream] cliente conectado
