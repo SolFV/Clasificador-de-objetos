@@ -66,10 +66,10 @@ void setup() {
   Serial.println("=======================================");
   if (PSRAM_ok) {
     Serial.println("RESULTADO: PSRAM PERFECTA Y OPERATIVAA! 🎉");
-    Serial.println("El problema de tu cámara es puramente eléctrico o de inicialización del sensor.");
+    Serial.println("");
   } else {
     Serial.println("❌ RESULTADO: PSRAM DEFECTUOSA O INESTABLE ❌");
-    Serial.println("Prueba bajando la velocidad de la CPU a 160MHz o cambiando a 'Quad PSRAM'.");
+    Serial.println("Pruebemos bajando la velocidad de la CPU a 160MHz o cambiando a 'Quad PSRAM'.");
   }
   Serial.println("=======================================");
 }
