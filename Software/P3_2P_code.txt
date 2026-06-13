@@ -1,613 +1,336 @@
+Codigo final funcionando:
 // =====================================================
-// OV5640  +  envío a Webhook con IA
+// SISTEMA COMPLETO: Cámara (YUV422 SVGA) + Webhook(n8n)
+//                   + Sensor IR + Motor DC (DRV8873) + Servo
+// ESP32-S3 / Arduino-ESP32 core 2.0.x
+//
+// Flujo:
+//   - Motor DC gira (vel 70) sin parar.
+//   - IR detecta objeto (HIGH) -> para motor, ESPERA (delay enfoque),
+//     toma foto y envía a n8n.
+//   - Respuesta del webhook:
+//       "verde"    -> servo NO se mueve, motor reanuda.
+//       "amarillo" -> servo 90° (5 s y vuelve a 0), motor reanuda.
+//       "rojo"     -> servo 180° (5 s y vuelve a 0), motor reanuda.
+//   - Motor sigue hasta un NUEVO evento de detección.
+//
+// LEDC:  timer0/canal0 = cámara | timer1/canales2,3 = motor | timer2/canal4 = servo
 // =====================================================
 #include "esp_camera.h"
 #include <WiFi.h>
-#include "esp_http_server.h"
 #include "img_converters.h"
 #include <HTTPClient.h>
-#include <WiFiClientSecure.h>
 #include <ESP32Servo.h>
 
-// ================= WIFI =================
-const char* WIFI_SSID = "nombre";
-const char* WIFI_PASS = "contraseña";
+// ============== WIFI ==============
+// OJO: deben ser la red donde corre n8n. Si cambiaste de red, ajusta esto
+// y tambien la IP del WEBHOOK_URL de abajo.
+const char* SSID_BUSCAR = "OPPO Reno11 F 5G";       // subcadena de tu SSID
+const char* WIFI_PASS   = "123456789";
 
-// ================= WEBHOOK =================
+// ============== WEBHOOK (n8n en tu notebook) ==============http://192.168.100.2:5678/webhook/572b7ae6-a35c-47cf-968a-02e008a7816e
 const char* WEBHOOK_URL =
-    "https://n8n.srv1338414.hstgr.cloud/webhook/"
-    "572b7ae6-b35c-47df-968a-02e008a7816e";
-
-// ================= SERVO =================
-#define SERVO_PIN   43          // GPIO del servo
-#define SERVO_HOLD  10000       // ms que se mantiene girado (10 s)
-Servo gateServo;
-
-// ================= PINES =================
-#define PWDN_GPIO_NUM     -1
-#define RESET_GPIO_NUM    -1
-
-#define XCLK_GPIO_NUM     13
-#define SIOD_GPIO_NUM      9
-#define SIOC_GPIO_NUM     10
-
-#define Y9_GPIO_NUM       47
-#define Y8_GPIO_NUM       21
-#define Y7_GPIO_NUM       38
-#define Y6_GPIO_NUM       39
-#define Y5_GPIO_NUM       40
-#define Y4_GPIO_NUM       41
-#define Y3_GPIO_NUM       42
-#define Y2_GPIO_NUM        1
-
-#define VSYNC_GPIO_NUM    12
-#define HREF_GPIO_NUM     11
-#define PCLK_GPIO_NUM     14
-
-httpd_handle_t server_httpd = NULL;   // puerto 80: index, capture, send
-httpd_handle_t stream_httpd = NULL;   // puerto 81: stream (task aparte)
-
-// ================= STREAM =================
-#define PART_BOUNDARY "123456789000000000000987654321"
-
-static const char* STREAM_CONTENT_TYPE =
-"multipart/x-mixed-replace;boundary=" PART_BOUNDARY;
-
-static const char* STREAM_BOUNDARY =
-"\r\n--" PART_BOUNDARY "\r\n";
-
-static const char* STREAM_PART =
-"Content-Type: image/jpeg\r\nContent-Length: %u\r\n\r\n";
-
-// =====================================================
-// BASE64 ENCODE  (sin librerías externas)
-// =====================================================
-static void b64_encode(const uint8_t *src, size_t len, char *dst)
-{
-    static const char tbl[] =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        "abcdefghijklmnopqrstuvwxyz"
-        "0123456789+/";
-
-    size_t i = 0, j = 0;
-    while (i < len) {
-        size_t  rem = len - i;
-        uint8_t a = src[i++];
-        uint8_t b = (rem > 1) ? src[i++] : 0;
-        uint8_t c = (rem > 2) ? src[i++] : 0;
-
-        dst[j++] = tbl[a >> 2];
-        dst[j++] = tbl[((a & 0x03) << 4) | (b >> 4)];
-        dst[j++] = (rem > 1) ? tbl[((b & 0x0f) << 2) | (c >> 6)] : '=';
-        dst[j++] = (rem > 2) ? tbl[c & 0x3f] : '=';
-    }
-    dst[j] = '\0';
-}
-
-// =====================================================
-// SEND TO WEBHOOK
-//   1. captura frame
-//   2. convierte a JPEG (calidad 40)
-//   3. codifica en base64
-//   4. POST multipart/form-data con DOS partes:
-//        - campo texto  "data" = base64   -> $json.body.data  (AI Agent)
-//        - archivo      "data" = JPEG bin -> $binary.data     (Subir a Drive)
-//   5. deja la respuesta del workflow en response_out
-// =====================================================
-
-// Boundary para el multipart (cualquier string que no aparezca en los datos)
+    "http://10.47.199.114:5678/webhook/"
+    "572b7ae6-a35c-47cf-968a-02e008a7816e";
 #define WH_BOUNDARY "----esp32s3boundary7d3a91fED"
 
-static bool sendToWebhook(String &response_out)
-{
-    // 1. Frame
-    camera_fb_t *fb = esp_camera_fb_get();
-    if (!fb) {
-        Serial.println("[WH] fallo captura");
-        return false;
-    }
+// ============== CALIDAD FOTO WEBHOOK ==============
+// Calidad JPEG de la foto que se manda a n8n (0-100, mayor = mejor).
+const int CALIDAD_WEBHOOK = 80;
 
-    // 2. JPEG
-    uint8_t *jpg_buf = NULL;
-    size_t   jpg_len = 0;
-    bool ok = frame2jpg(fb, 40, &jpg_buf, &jpg_len);
-    esp_camera_fb_return(fb);
+// ============== SENSOR IR ==============
+#define IR_PIN  48        // HIGH = objeto detectado
 
-    if (!ok || !jpg_buf) {
-        Serial.println("[WH] fallo JPEG");
-        return false;
-    }
-    Serial.printf("[WH] JPEG: %u bytes\n", jpg_len);
+// ============== MOTOR DC (DRV8873) ==============
+#define IN1     5
+#define IN2     4
+#define NFAULT  17
+const int CANAL_IN1 = 2;     // canal LEDC 2 -> timer 1
+const int CANAL_IN2 = 3;     // canal LEDC 3 -> timer 1
+const int FREQ_PWM  = 20000;
+const int RES_PWM   = 8;
+const int VELOCIDAD = 100;
 
-    // 3. base64 del JPEG (para el campo de texto que lee el AI Agent)
-    size_t b64_chars = ((jpg_len + 2) / 3) * 4;
-    char *b64 = (char*)ps_malloc(b64_chars + 1);
-    if (!b64) b64 = (char*)malloc(b64_chars + 1);
-    if (!b64) {
-        free(jpg_buf);
-        Serial.println("[WH] sin memoria (b64)");
-        return false;
-    }
-    b64_encode(jpg_buf, jpg_len, b64);
+// ============== SERVO ==============
+#define SERVO_PIN 43
+Servo gateServo;
 
-    // 4. Construir las partes del multipart
-    //    PARTE 1: campo texto "data" = base64
-    String part1 =
-        "--" WH_BOUNDARY "\r\n"
-        "Content-Disposition: form-data; name=\"data\"\r\n\r\n";
+// ============== CÁMARA (pines) ==============
+#define XCLK_GPIO_NUM   13
+#define SIOD_GPIO_NUM    9
+#define SIOC_GPIO_NUM   10
+#define Y9_GPIO_NUM     47
+#define Y8_GPIO_NUM     21
+#define Y7_GPIO_NUM     38
+#define Y6_GPIO_NUM     39
+#define Y5_GPIO_NUM     40
+#define Y4_GPIO_NUM     41
+#define Y3_GPIO_NUM     42
+#define Y2_GPIO_NUM      1
+#define VSYNC_GPIO_NUM  12
+#define HREF_GPIO_NUM   11
+#define PCLK_GPIO_NUM   14
 
-    //    PARTE 2: archivo "data" = imagen JPEG binaria
-    String part2 =
-        "\r\n--" WH_BOUNDARY "\r\n"
-        "Content-Disposition: form-data; name=\"data\"; filename=\"capture.jpg\"\r\n"
-        "Content-Type: image/jpeg\r\n\r\n";
+// ============== ESTADO ==============
+bool objetoAntes = false;
+bool servoActivo = false;
+unsigned long tServo = 0;
+const unsigned long SERVO_HOLD = 5000;    // 5 s
 
-    //    Cierre
-    String tail = "\r\n--" WH_BOUNDARY "--\r\n";
+bool camaraOK = false, servoOK = false, wifiOK = false;
 
-    size_t total =
-        part1.length() + b64_chars +
-        part2.length() + jpg_len +
-        tail.length();
+// =====================================================
+// BASE64
+// =====================================================
+static void b64_encode(const uint8_t *src, size_t len, char *dst) {
+  static const char tbl[] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "abcdefghijklmnopqrstuvwxyz0123456789+/";
+  size_t i = 0, j = 0;
+  while (i < len) {
+    size_t rem = len - i;
+    uint8_t a = src[i++];
+    uint8_t b = (rem > 1) ? src[i++] : 0;
+    uint8_t c = (rem > 2) ? src[i++] : 0;
+    dst[j++] = tbl[a >> 2];
+    dst[j++] = tbl[((a & 0x03) << 4) | (b >> 4)];
+    dst[j++] = (rem > 1) ? tbl[((b & 0x0f) << 2) | (c >> 6)] : '=';
+    dst[j++] = (rem > 2) ? tbl[c & 0x3f] : '=';
+  }
+  dst[j] = '\0';
+}
 
-    // 5. Alocar el cuerpo completo en PSRAM
-    uint8_t *body = (uint8_t*)ps_malloc(total);
-    if (!body) body = (uint8_t*)malloc(total);
-    if (!body) {
-        free(b64);
-        free(jpg_buf);
-        Serial.println("[WH] sin memoria (body)");
-        return false;
-    }
+// =====================================================
+// CONECTAR WIFI (busca por subcadena y usa el SSID exacto)
+// =====================================================
+bool conectarWiFi() {
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect(true);
+  delay(200);
 
-    // 6. Ensamblar el cuerpo: part1 + base64 + part2 + jpeg + tail
-    size_t off = 0;
-    memcpy(body + off, part1.c_str(), part1.length()); off += part1.length();
-    memcpy(body + off, b64,           b64_chars);       off += b64_chars;
-    memcpy(body + off, part2.c_str(), part2.length()); off += part2.length();
-    memcpy(body + off, jpg_buf,       jpg_len);          off += jpg_len;
-    memcpy(body + off, tail.c_str(),  tail.length());    off += tail.length();
+  Serial.println("[WIFI] escaneando...");
+  int n = WiFi.scanNetworks();
+  int idx = -1;
+  for (int i = 0; i < n; i++)
+    if (WiFi.SSID(i).indexOf(SSID_BUSCAR) >= 0) { idx = i; break; }
 
-    free(b64);
-    free(jpg_buf);
+  if (idx < 0) { Serial.printf("[WIFI] no encontre red con '%s'\n", SSID_BUSCAR); return false; }
 
-    // 7. POST HTTPS
-    WiFiClientSecure tls;
-    tls.setInsecure();          // sin verificar cert (OK para pruebas)
+  String ssidReal = WiFi.SSID(idx);
+  Serial.printf("[WIFI] conectando a [%s]", ssidReal.c_str());
+  WiFi.begin(ssidReal.c_str(), WIFI_PASS);
 
-    HTTPClient http;
-    bool success = false;
+  unsigned long t0 = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - t0 < 20000) { delay(400); Serial.print("."); }
+  Serial.println();
+  return (WiFi.status() == WL_CONNECTED);
+}
 
-    if (http.begin(tls, WEBHOOK_URL)) {
-        http.addHeader("Content-Type",
-            "multipart/form-data; boundary=" WH_BOUNDARY);
-        http.setTimeout(60000); // 60s, el modelo AI puede tardar
+// =====================================================
+// ENVÍO AL WEBHOOK (captura YUV422 -> JPEG por software)
+// =====================================================
+static bool sendToWebhook(String &response_out) {
+  camera_fb_t *fb = esp_camera_fb_get();
+  if (!fb) { Serial.println("[WH] fallo captura"); return false; }
 
-        int code = http.POST(body, total);
-        if (code > 0) {
-            Serial.printf("[WH] HTTP %d\n", code);
-            response_out = http.getString();
-            Serial.println("[WH] resp: " + response_out);
-            success = true;
-        } else {
-            Serial.printf("[WH] error: %s\n",
-                http.errorToString(code).c_str());
-        }
-        http.end();
+  uint8_t *jpg_buf = NULL; size_t jpg_len = 0;
+  bool ok = frame2jpg(fb, CALIDAD_WEBHOOK, &jpg_buf, &jpg_len);   // calidad arriba
+  esp_camera_fb_return(fb);
+  if (!ok || !jpg_buf) { Serial.println("[WH] fallo JPEG"); return false; }
+  Serial.printf("[WH] JPEG %u bytes\n", jpg_len);
+
+  size_t b64_chars = ((jpg_len + 2) / 3) * 4;
+  char *b64 = (char*)ps_malloc(b64_chars + 1);
+  if (!b64) b64 = (char*)malloc(b64_chars + 1);
+  if (!b64) { free(jpg_buf); Serial.println("[WH] sin memoria b64"); return false; }
+  b64_encode(jpg_buf, jpg_len, b64);
+
+  String part1 =
+    "--" WH_BOUNDARY "\r\n"
+    "Content-Disposition: form-data; name=\"data\"\r\n\r\n";
+  String part2 =
+    "\r\n--" WH_BOUNDARY "\r\n"
+    "Content-Disposition: form-data; name=\"data\"; filename=\"capture.jpg\"\r\n"
+    "Content-Type: image/jpeg\r\n\r\n";
+  String tail = "\r\n--" WH_BOUNDARY "--\r\n";
+
+  size_t total = part1.length() + b64_chars + part2.length() + jpg_len + tail.length();
+  uint8_t *body = (uint8_t*)ps_malloc(total);
+  if (!body) body = (uint8_t*)malloc(total);
+  if (!body) { free(b64); free(jpg_buf); Serial.println("[WH] sin memoria body"); return false; }
+
+  size_t off = 0;
+  memcpy(body+off, part1.c_str(), part1.length()); off += part1.length();
+  memcpy(body+off, b64, b64_chars);                off += b64_chars;
+  memcpy(body+off, part2.c_str(), part2.length()); off += part2.length();
+  memcpy(body+off, jpg_buf, jpg_len);              off += jpg_len;
+  memcpy(body+off, tail.c_str(), tail.length());   off += tail.length();
+  free(b64); free(jpg_buf);
+
+  WiFiClient client; HTTPClient http;
+  bool success = false;
+  if (http.begin(client, WEBHOOK_URL)) {
+    http.addHeader("Content-Type", "multipart/form-data; boundary=" WH_BOUNDARY);
+    http.setTimeout(60000);
+    int code = http.POST(body, total);
+    if (code > 0) {
+      Serial.printf("[WH] HTTP %d\n", code);
+      response_out = http.getString();
+      Serial.println("[WH] resp: " + response_out);
+      success = true;
     } else {
-        Serial.println("[WH] http.begin() fallo");
+      Serial.printf("[WH] error: %s\n", http.errorToString(code).c_str());
     }
-
-    free(body);
-    return success;
+    http.end();
+  } else {
+    Serial.println("[WH] http.begin() fallo");
+  }
+  free(body);
+  return success;
 }
 
 // =====================================================
-// PARSEAR COLOR de la respuesta de n8n
-// Respuesta tipo:  [{"color":"rojo","descripcion":"..."}]
+// PARSEAR COLOR del JSON  [{"color":"rojo",...}]
 // =====================================================
-static String parseColor(const String &json)
-{
-    int k = json.indexOf("\"color\"");
-    if (k < 0) return "";
-    int c = json.indexOf(':', k);
-    if (c < 0) return "";
-    int q1 = json.indexOf('"', c);
-    if (q1 < 0) return "";
-    int q2 = json.indexOf('"', q1 + 1);
-    if (q2 < 0) return "";
-
-    String val = json.substring(q1 + 1, q2);
-    val.toLowerCase();
-    val.trim();
-    return val;
+static String parseColor(const String &json) {
+  int k  = json.indexOf("\"color\"");      if (k  < 0) return "";
+  int c  = json.indexOf(':', k);           if (c  < 0) return "";
+  int q1 = json.indexOf('"', c);           if (q1 < 0) return "";
+  int q2 = json.indexOf('"', q1 + 1);      if (q2 < 0) return "";
+  String val = json.substring(q1 + 1, q2);
+  val.toLowerCase(); val.trim();
+  return val;
 }
 
 // =====================================================
-// MOVER SERVO segun el color
-//   rojo     -> 90 grados,  espera 10s, vuelve a 0
-//   amarillo -> 180 grados, espera 10s, vuelve a 0
-//   verde    -> no se mueve
+// MOTOR
 // =====================================================
-static void moveServoForColor(const String &color)
-{
-    int angle;
-    if (color == "rojo")          angle = 90;
-    else if (color == "amarillo") angle = 180;
-    else {
-        Serial.printf("[SERVO] color '%s' -> no mueve\n", color.c_str());
-        return;
-    }
+void motorGira() { ledcWrite(CANAL_IN1, VELOCIDAD); ledcWrite(CANAL_IN2, 0); }
+void motorPara() { ledcWrite(CANAL_IN1, 0);         ledcWrite(CANAL_IN2, 0); }
 
-    Serial.printf("[SERVO] %s -> %d grados\n", color.c_str(), angle);
-    gateServo.write(angle);
-    delay(SERVO_HOLD);          // mantener 10 segundos
+// =====================================================
+// ACCIÓN SEGÚN COLOR
+// =====================================================
+void procesarColor(const String &color) {
+  if (color == "verde") {
+    Serial.println("[ACCION] verde -> servo no se mueve");
     gateServo.write(0);
-    Serial.println("[SERVO] vuelve a 0 grados");
+    servoActivo = false;
+  } else if (color == "amarillo") {
+    Serial.println("[ACCION] amarillo -> servo 90");
+    gateServo.write(90);
+    servoActivo = true; tServo = millis();
+  } else if (color == "rojo") {
+    Serial.println("[ACCION] rojo -> servo 180");
+    gateServo.write(180);
+    servoActivo = true; tServo = millis();
+  } else {
+    Serial.printf("[ACCION] color '%s' desconocido -> sin accion\n", color.c_str());
+  }
 }
 
 // =====================================================
-// HANDLER  GET /send
-// Captura, manda al webhook, responde al browser y
-// luego mueve el servo segun el color recibido.
+// SETUP
 // =====================================================
-static esp_err_t send_handler(httpd_req_t *req)
-{
-    String response;
-    bool ok = sendToWebhook(response);
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+  Serial.println("\n=== ARRANQUE ===");
 
-    httpd_resp_set_type(req, "application/json");
+  pinMode(IR_PIN, INPUT_PULLUP);
 
-    esp_err_t res;
+  // MOTOR DC primero
+  pinMode(NFAULT, INPUT_PULLUP);
+  ledcSetup(CANAL_IN1, FREQ_PWM, RES_PWM);
+  ledcSetup(CANAL_IN2, FREQ_PWM, RES_PWM);
+  ledcAttachPin(IN1, CANAL_IN1);
+  ledcAttachPin(IN2, CANAL_IN2);
+  motorGira();
+  Serial.println("[MOTOR] OK -> girando");
+
+  // SERVO
+  ESP32PWM::allocateTimer(2);
+  ESP32PWM::allocateTimer(3);
+  gateServo.setPeriodHertz(50);
+  int canalServo = gateServo.attach(SERVO_PIN, 500, 2500);
+  if (canalServo != 0) { servoOK = true; gateServo.write(0); Serial.printf("[SERVO] OK (canal %d)\n", canalServo); }
+  else                 { servoOK = false; Serial.println("[SERVO] FALLO"); }
+
+  // CÁMARA (YUV422 SVGA - buena calidad y colores correctos)
+  pinMode(SIOD_GPIO_NUM, INPUT_PULLUP);
+  pinMode(SIOC_GPIO_NUM, INPUT_PULLUP);
+  camera_config_t cfg = {};
+  cfg.ledc_channel = LEDC_CHANNEL_0;
+  cfg.ledc_timer   = LEDC_TIMER_0;
+  cfg.pin_d0 = Y2_GPIO_NUM; cfg.pin_d1 = Y3_GPIO_NUM;
+  cfg.pin_d2 = Y4_GPIO_NUM; cfg.pin_d3 = Y5_GPIO_NUM;
+  cfg.pin_d4 = Y6_GPIO_NUM; cfg.pin_d5 = Y7_GPIO_NUM;
+  cfg.pin_d6 = Y8_GPIO_NUM; cfg.pin_d7 = Y9_GPIO_NUM;
+  cfg.pin_xclk = XCLK_GPIO_NUM;  cfg.pin_pclk = PCLK_GPIO_NUM;
+  cfg.pin_vsync = VSYNC_GPIO_NUM; cfg.pin_href = HREF_GPIO_NUM;
+  cfg.pin_sccb_sda = SIOD_GPIO_NUM; cfg.pin_sccb_scl = SIOC_GPIO_NUM;
+  cfg.pin_pwdn = -1; cfg.pin_reset = -1;
+
+  cfg.xclk_freq_hz = 20000000;
+  cfg.pixel_format = PIXFORMAT_YUV422;     // color nativo correcto
+  cfg.frame_size   = FRAMESIZE_SVGA;       // 800x600 (baja a VGA si da fb NULL)
+  cfg.fb_count     = 1;
+  cfg.grab_mode    = CAMERA_GRAB_WHEN_EMPTY;
+  cfg.fb_location  = CAMERA_FB_IN_PSRAM;
+
+  esp_err_t errCam = esp_camera_init(&cfg);
+  if (errCam == ESP_OK) { camaraOK = true; Serial.println("[CAMARA] OK (YUV422 SVGA)"); }
+  else                  { camaraOK = false; Serial.printf("[CAMARA] FALLO 0x%x\n", errCam); }
+
+  // WIFI
+  wifiOK = conectarWiFi();
+  if (wifiOK) { Serial.print("[WIFI] OK -> IP: "); Serial.println(WiFi.localIP()); }
+  else        { Serial.println("[WIFI] FALLO (el webhook no funcionara)"); }
+
+  // RESUMEN
+  Serial.println("\n---------- RESUMEN ----------");
+  Serial.printf("  Camara : %s\n", camaraOK ? "OK" : "FALLO");
+  Serial.printf("  Servo  : %s\n", servoOK  ? "OK" : "FALLO");
+  Serial.printf("  WiFi   : %s\n", wifiOK   ? "OK" : "FALLO");
+  Serial.println("-----------------------------");
+  Serial.println("=== Sistema listo. Motor girando. ===\n");
+}
+
+// =====================================================
+// LOOP
+// =====================================================
+void loop() {
+  bool objeto = (digitalRead(IR_PIN) == HIGH);   // HIGH = detectado
+
+  if (objeto && !objetoAntes) {
+    Serial.println("\n[IR] objeto detectado -> parar y fotografiar");
+    motorPara();
+
+    // ============================================================
+    // >>> DELAY DE ENFOQUE (AJUSTABLE) <
+    // Espera a que la caja quede quieta/enfocada antes de la foto.
+    // Sube o baja este 2000 (en milisegundos) durante tus pruebas.
+    delay(2000);   // <<<<<< AQUI: 2 segundos antes de la foto
+    // ============================================================
+
+    String respuesta;
+    bool ok = sendToWebhook(respuesta);
     if (ok) {
-        res = httpd_resp_send(req,
-            response.c_str(), response.length());
+      String color = parseColor(respuesta);
+      Serial.println("[IR] color: " + color);
+      procesarColor(color);
     } else {
-        const char *err = "{\"error\":\"fallo el envio\"}";
-        httpd_resp_set_status(req, "500 Internal Server Error");
-        res = httpd_resp_send(req, err, strlen(err));
+      Serial.println("[IR] fallo el envio");
     }
-
-    // Ya respondimos al navegador; ahora movemos el servo.
-    // (El delay de 10s NO afecta al browser porque ya recibio su respuesta.)
-    if (ok) {
-        String color = parseColor(response);
-        moveServoForColor(color);
-    }
-
-    return res;
-}
-
-// =====================================================
-// CAPTURE
-// =====================================================
-static esp_err_t capture_handler(httpd_req_t *req)
-{
-    camera_fb_t *fb = esp_camera_fb_get();
-
-    if (!fb) {
-        Serial.println("fb NULL");
-        httpd_resp_send_500(req);
-        return ESP_FAIL;
-    }
-
-    uint8_t *jpg_buf = NULL;
-    size_t jpg_len = 0;
-
-    bool ok = frame2jpg(
-        fb,
-        80,
-        &jpg_buf,
-        &jpg_len
-    );
-
-    esp_camera_fb_return(fb);
-
-    if (!ok) {
-        Serial.println("frame2jpg fallo");
-        httpd_resp_send_500(req);
-        return ESP_FAIL;
-    }
-
-    httpd_resp_set_type(req, "image/jpeg");
-
-    esp_err_t res = httpd_resp_send(
-        req,
-        (const char*)jpg_buf,
-        jpg_len
-    );
-
-    free(jpg_buf);
-
-    return res;
-}
-
-// =====================================================
-// STREAM
-// =====================================================
-static esp_err_t stream_handler(httpd_req_t *req)
-{
-    camera_fb_t *fb = NULL;
-    esp_err_t res = ESP_OK;
-    char part_buf[64];
-
-    httpd_resp_set_type(req, STREAM_CONTENT_TYPE);
-
-    while (true) {
-
-        fb = esp_camera_fb_get();
-
-        if (!fb) {
-            Serial.println("fb NULL");
-            delay(20);
-            continue;
-        }
-
-        uint8_t *jpg_buf = NULL;
-        size_t jpg_len = 0;
-
-        bool ok = frame2jpg(
-            fb,
-            70,
-            &jpg_buf,
-            &jpg_len
-        );
-
-        esp_camera_fb_return(fb);
-
-        if (!ok) {
-            Serial.println("frame2jpg fail");
-            continue;
-        }
-
-        size_t hlen = snprintf(
-            part_buf,
-            sizeof(part_buf),
-            STREAM_PART,
-            jpg_len
-        );
-
-        res = httpd_resp_send_chunk(
-            req,
-            STREAM_BOUNDARY,
-            strlen(STREAM_BOUNDARY)
-        );
-
-        if (res == ESP_OK)
-            res = httpd_resp_send_chunk(
-                req,
-                part_buf,
-                hlen
-            );
-
-        if (res == ESP_OK)
-            res = httpd_resp_send_chunk(
-                req,
-                (const char*)jpg_buf,
-                jpg_len
-            );
-
-        free(jpg_buf);
-
-        if (res != ESP_OK)
-            break;
-    }
-
-    return res;
-}
-
-// =====================================================
-// INDEX  (con botón para enviar a n8n)
-// =====================================================
-static esp_err_t index_handler(httpd_req_t *req)
-{
-    const char *html =
-    "<!DOCTYPE html><html><head><meta charset='utf-8'>"
-    "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-    "<style>"
-    "body{background:#111;color:#eee;text-align:center;font-family:monospace;padding:18px}"
-    "button,a.btn{padding:9px 18px;margin:4px;border-radius:5px;border:1px solid #333;"
-    "background:#1a1a1a;color:#ccc;font-family:monospace;cursor:pointer;text-decoration:none}"
-    "button.go{background:#0a3d0a;border-color:#1a6b1a;color:#5dff5d}"
-    "button:disabled{opacity:.4}"
-    "#res{max-width:640px;margin:12px auto;background:#181818;border:1px solid #222;"
-    "border-radius:5px;padding:12px;text-align:left;font-size:.85rem;line-height:1.5;word-break:break-all}"
-    "#badge{padding:2px 10px;border-radius:3px;font-weight:bold;margin-right:8px;color:#000}"
-    "</style></head><body>"
-    "<h2>OV5640 &mdash; n8n</h2>"
-    "<p>"
-    "<a class='btn' href='/capture'>capture</a>"
-    "<button class='go' id='b' onclick='go()'>&#9658; Enviar a n8n</button>"
-    "</p>"
-    "<div id='res'>Listo.</div>"
-    "<img id='cam' width='640'>"
-    "<script>"
-    "document.getElementById('cam').src='http://'+location.hostname+':81/stream';"
-    "var col={verde:'#1aff6b',rojo:'#ff5050',amarillo:'#ffd000'};"
-    "function go(){"
-    "var b=document.getElementById('b'),r=document.getElementById('res');"
-    "b.disabled=true;r.innerHTML='&#9203; enviando...';"
-    "fetch('/send').then(x=>x.json()).then(j=>{"
-    "var a=Array.isArray(j)?j[0]:j;"
-    "var c=(a.color||'').toLowerCase().trim();"
-    "var d=a.descripcion||a.descripcion_analisis||JSON.stringify(a);"
-    "r.innerHTML='<span id=\"badge\" style=\"background:'+(col[c]||'#fff')+'\">'+c.toUpperCase()+'</span>'+d;"
-    "b.disabled=false;"
-    "}).catch(e=>{r.innerHTML='Error: '+e;b.disabled=false;});"
-    "}"
-    "</script>"
-    "</body></html>";
-
-    httpd_resp_set_type(req, "text/html");
-    return httpd_resp_send(req, html, strlen(html));
-}
-
-// =====================================================
-void startCameraServer()
-{
-    // ---- Servidor 1 (puerto 80): index, capture, send ----
-    httpd_config_t config =
-        HTTPD_DEFAULT_CONFIG();
-
-    config.server_port = 80;
-    config.ctrl_port   = 32768;
-    config.stack_size  = 16384;   // SSL/TLS para /send necesita stack grande
-    config.max_uri_handlers = 8;
-
-    httpd_uri_t index_uri = {
-        .uri="/",
-        .method=HTTP_GET,
-        .handler=index_handler
-    };
-
-    httpd_uri_t capture_uri = {
-        .uri="/capture",
-        .method=HTTP_GET,
-        .handler=capture_handler
-    };
-
-    httpd_uri_t send_uri = {
-        .uri="/send",
-        .method=HTTP_GET,
-        .handler=send_handler
-    };
-
-    httpd_start(
-        &server_httpd,
-        &config
-    );
-
-    httpd_register_uri_handler(
-        server_httpd,
-        &index_uri
-    );
-
-    httpd_register_uri_handler(
-        server_httpd,
-        &capture_uri
-    );
-
-    httpd_register_uri_handler(
-        server_httpd,
-        &send_uri
-    );
-
-    // ---- Servidor 2 (puerto 81): SOLO el stream ----
-    // En su propia task, asi el bucle infinito del stream
-    // no bloquea las peticiones a /send y /capture.
-    config.server_port = 81;
-    config.ctrl_port   = 32769;
-    config.stack_size  = 8192;
-
-    httpd_uri_t stream_uri = {
-        .uri="/stream",
-        .method=HTTP_GET,
-        .handler=stream_handler
-    };
-
-    httpd_start(
-        &stream_httpd,
-        &config
-    );
-
-    httpd_register_uri_handler(
-        stream_httpd,
-        &stream_uri
-    );
-}
-
-// =====================================================
-void setup()
-{
-    Serial.begin(115200);
-    delay(2000);
-
-    pinMode(SIOD_GPIO_NUM, INPUT_PULLUP);
-    pinMode(SIOC_GPIO_NUM, INPUT_PULLUP);
-
-    camera_config_t config = {};
-
-    config.ledc_channel =
-        LEDC_CHANNEL_0;
-
-    config.ledc_timer =
-        LEDC_TIMER_0;
-
-    config.pin_d0 = Y2_GPIO_NUM;
-    config.pin_d1 = Y3_GPIO_NUM;
-    config.pin_d2 = Y4_GPIO_NUM;
-    config.pin_d3 = Y5_GPIO_NUM;
-    config.pin_d4 = Y6_GPIO_NUM;
-    config.pin_d5 = Y7_GPIO_NUM;
-    config.pin_d6 = Y8_GPIO_NUM;
-    config.pin_d7 = Y9_GPIO_NUM;
-
-    config.pin_xclk = XCLK_GPIO_NUM;
-    config.pin_pclk = PCLK_GPIO_NUM;
-    config.pin_vsync = VSYNC_GPIO_NUM;
-    config.pin_href = HREF_GPIO_NUM;
-
-    config.pin_sccb_sda = SIOD_GPIO_NUM;
-    config.pin_sccb_scl = SIOC_GPIO_NUM;
-
-    config.pin_pwdn = -1;
-    config.pin_reset = -1;
-
-    config.xclk_freq_hz = 24000000;
-
-    config.pixel_format = PIXFORMAT_RGB565;
-    config.frame_size = FRAMESIZE_QVGA;
-
-    config.fb_count = 1;
-    config.fb_location =
-        CAMERA_FB_IN_PSRAM;
-
-    esp_err_t err =
-        esp_camera_init(&config);
-
-    if (err != ESP_OK) {
-        Serial.printf(
-            "init fail 0x%x\n",
-            err
-        );
-        return;
-    }
-
-    Serial.println("Camara OK RGB565");
-
-    // ---- Servo ----
-    // Usamos timers LEDC 1,2,3 para el servo.
-    // El timer 0 lo usa la camara (XCLK), por eso NO lo tocamos.
-    ESP32PWM::allocateTimer(1);
-    ESP32PWM::allocateTimer(2);
-    ESP32PWM::allocateTimer(3);
-    gateServo.setPeriodHertz(50);              // servos estandar = 50 Hz
-    gateServo.attach(SERVO_PIN, 500, 2500);    // ancho de pulso 0.5ms-2.5ms
-    gateServo.write(0);                        // posicion inicial
-    Serial.println("Servo OK en GPIO 43");
-
-    WiFi.begin(
-        WIFI_SSID,
-        WIFI_PASS
-    );
-
-    while (
-        WiFi.status()
-        != WL_CONNECTED
-    ) {
-        delay(300);
-        Serial.print(".");
-    }
-
-    Serial.println();
-    Serial.println(
-        WiFi.localIP()
-    );
-
-    startCameraServer();
-}
-
-void loop()
-{
-    delay(1000);
+    motorGira();
+  }
+  objetoAntes = objeto;
+
+  if (servoActivo && (millis() - tServo >= SERVO_HOLD)) {
+    gateServo.write(0);
+    servoActivo = false;
+    Serial.println("[SERVO] vuelve a 0");
+  }
+
+  delay(20);
 }
