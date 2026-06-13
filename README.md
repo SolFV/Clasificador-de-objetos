@@ -64,8 +64,8 @@ El diseño electrónico de la PCB fue optimizado mediante un plano de masa conti
 ---
 
 ## 👥 Autores (MCT - 2026)
-* **José Fabián Medina Dávalos** - [jfmedina@fiuna.edu.py](mailto:jfmedina@fiuna.edu.py) - +595 994 945 088
-* **Sol Aramí Fernández Vargas** - [solfernandez@fiuna.edu.py](mailto:solfernandez@fiuna.edu.py) - +595 982 152 869
-* **Gabriela Belén Orrego Arzamendia** - [gorrego@fiuna.edu.py](mailto:gorrego@fiuna.edu.py) - +595 983 141 917
+* **José Fabián Medina Dávalos** - [jfmedina@fiuna.edu.py](mailto:jfmedina@fiuna.edu.py) 
+* **Sol Aramí Fernández Vargas** - [solfernandez@fiuna.edu.py](mailto:solfernandez@fiuna.edu.py) 
+* **Gabriela Belén Orrego Arzamendia** - [gorrego@fiuna.edu.py](mailto:gorrego@fiuna.edu.py) 
 
 *Facultad de Ingeniería, Universidad Nacional de Asunción (FIUNA)*
