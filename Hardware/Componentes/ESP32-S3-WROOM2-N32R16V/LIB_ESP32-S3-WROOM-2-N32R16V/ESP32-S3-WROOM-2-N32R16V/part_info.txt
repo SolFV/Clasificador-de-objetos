@@ -1,9 +1,0 @@
-Manufacturer=Espressif Systems
-PartNumber=ESP32-S3-WROOM-2-N32R16V
-PartCategory=Integrated Circuit
-PackageCategory=Other
-PinCount=49
-Version=1.2
-Released=2025-01-30 08:18:50
-Downloaded=2026-03-24 00:49:33
-3D=Y
