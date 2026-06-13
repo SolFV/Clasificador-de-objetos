@@ -1,21 +1,33 @@
-,,,,,,,,
-,,,,Dolar,6538,,,
-,Total,414.434,Individual,138.145,,,,
-,Categoría,Componente,Marca,Precio USD,Precio PYG,Link,Cant. Mín,Precio Final PYG
-,MCU,ESP32-S3-WROOM-2-N32R16V,Espressif Systems,"11,40",74.533,https://www.mouser.com/ProductDetail/Espressif-Systems/ESP32-S3-WROOM-2-N32R16V?qs=sGAEpiMZZMu3sxpa5v1qro5FY7hlnl9MGjSvu0Cu1eE%3D,1,74.533
-,MOTOR,"NOVAMAX-6V-5,75A-800RPM",Sumozade,"15,00",98.070,https://sumozade.com/novamax-6v-800rpm-dc-motor,1,98.070
-,LDO,LM1117MPX-3.3/NOPB,Diodes Incorporated,"1,04",6.800,https://www.mouser.com/ProductDetail/Texas-Instruments/LM1117MPX-3.3-NOPB?qs=X1J7HmVL2ZHRbBIxXi4utg%3D%3D,2,13.599
-,DRIVER,DRV8873SPWPRQ1,Texas Instruments,"4,13",27.002,https://www.mouser.com/ProductDetail/Texas-Instruments/DRV8873SPWPRQ1?qs=w%2Fv1CP2dgqqzptMVbPbEvA%3D%3D,2,54.004
-,CAMERA, OV5640 DVP,CN,"10,04",64.789,https://es.aliexpress.com/item/1005004471654205.html?dp=gx-row-aliexpress-aliexpress-cos&aff_fcid=099a76e24a3f441fb9dae4f931856137-1772842608622-05650-_onWzMZC&tt=CPS_NORMAL&aff_fsk=_onWzMZC&aff_platform=portals-tool&sk=_onWzMZC&aff_trace_key=099a76e24a3f441fb9dae4f931856137-1772842608622-05650-_onWzMZC&terminal_id=495a98db26bb4e99a93077b21c960883&afSmartRedirect=y,2,129.578
-,USB-C,USB TIPO C HEMBRA 16 PINES 1.6MM SMD,Plett,"2,30",15.037,CONECTOR USB TIPO C HEMBRA 16 PINES 1.6MM SMD - Electronica Plett,1,15.037
-,COMPONENTES,,,,,,,
-,Capacitor de Tantalio 10uF,T491B106K016AT,KEMET,"0,44",2.877,https://www.mouser.com/ProductDetail/KEMET/T491B106K016AT?qs=WydH9nGI6cAd3rA5fhFGhg%3D%3D,2,5.753
-,Capacitor Ceramico 1uF,CL21B105KAFNNNE,Samsung Electro-Mechanics,"0,11",719,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL21B105KAFNNNE?qs=349EhDEZ59rlwSnoUrPIow%3D%3D,2,1.438
-,"Capacitor Ceramico 0,1uF",08055C104KAT2A,KYOCERA AVX,"0,13",850,https://www.mouser.com/ProductDetail/KYOCERA-AVX/08055C104KAT2A?qs=2ujN4bDBNE9mJvapP%252BjopA%3D%3D,2,1.700
-,Capacitor Ceramico 22uF,CL21A226MQQNNNE,Samsung Electro-Mechanics,"0,13",839,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL21A226MQQNNNE?qs=349EhDEZ59oZnQF%252BO1HZ%252BQ%3D%3D,2,1.679
-,Resistencia 10k 0805,RC0805FR-0710KL,YAGEO,"0,14",915,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-0710KL?qs=7bY8808IzHq6vrU3BeiiYw%3D%3D,2,1.831
-,"Resistencia 5,1k 0805",RK73H2ATTD5101F,KOA Speer,"0,10",646,https://www.mouser.com/ProductDetail/KOA-Speer/RK73H2ATTD5101F?qs=qdbN2r920CXERR4aJasjig%3D%3D,4,2.582
-,"Resistencia 0,1k 0805",RC0805FR-07100RL,YAGEO,"0,10",654,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-07100RL?qs=8Y8p%252BasKcI6MtXUgG4E6SQ%3D%3D,2,1.308
-,Capacitor Ceramico 47nF,CL21B473KBCNNNC,Samsung Electro-Mechanics,"0,10",646,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL21B473KBCNNNC?qs=349EhDEZ59p8vyw6Prguww%3D%3D,2,1.291
-,Capacitor Electrolitico 100uF,EEE-FK1H101P,Panasonic,"0,72",4.707,https://www.mouser.com/ProductDetail/Panasonic/EEE-FK1H101P?qs=qE6bgDGEOCvpdTqIVQNh4Q%3D%3D,2,9.415
-,"Resistencia 1,5k 0805",RC0805FR-071K5L,YAGEO,"0,10",654,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-071K5L?qs=8Y8p%252BasKcI6LbaohOVk4HA%3D%3D,4,2.615
+Categoría,Componente / Descripción,MPN (Mfr Part Number),Marca / Fabricante,Cantidad,Unitario (USD),Total (USD),Total (PYG),Proveedor / Link
+MCU,Microcontrolador ESP32-S3,ESP32-S3-WROOM-1-N16R8,Espressif Systems,2.0,8.72,17.44,111459,https://www.mouser.com/ProductDetail/Espressif-Systems/ESP32-S3-WROOM-1-N16R8
+LDO,Regulador LDO (3.3V),LD1117S33TR,STMicroelectronics,2.0,0.34,0.68,4346,https://www.mouser.com/ProductDetail/STMicroelectronics/LD1117S33TR
+DRIVER,Driver de Motor H-Bridge,DRV8873SPWPRQ1,Texas Instruments,2.0,4.13,8.26,52790,https://www.mouser.com/ProductDetail/Texas-Instruments/DRV8873SPWPRQ1
+USB-C,Conector USB Tipo C Hembra 16 Pines,USB4510-03-1-A,GCT,1.0,0.84,0.84,5368,https://www.mouser.com/ProductDetail/GCT/USB4510-03-1-A
+CAMERA,Módulo de Cámara OV5640 (5 MP),5840 (Adafruit),Adafruit,1.0,9.95,9.95,63590,https://www.adafruit.com/product/5840
+SERVO,Servomotor 180 Grados,SER0006,DFRobot,1.0,3.63,3.63,23199,https://www.dfrobot.com/product-2525.html
+DIODO,Diodo Schottky 40V 1A,SS14F-HF,Taiwan Semiconductor,4.0,0.32,1.28,8180,https://www.mouser.com/ProductDetail/Taiwan-Semiconductor/SS14F-HF
+CAPACITOR,Capacitor Cerámico 10nF 0805,CL21B103KBANNNC,Samsung Electro-Mechanics,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL21B103KBANNNC
+CAPACITOR,Capacitor Cerámico 47nF 0805,CL21B473KBCNNNC,Samsung Electro-Mechanics,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL21B473KBCNNNC
+CAPACITOR,Capacitor Cerámico 100nF 0805,CL21B104KBCNNNC,Samsung Electro-Mechanics,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL21B104KBCNNNC
+CAPACITOR,Capacitor Cerámico 220nF 0805,CL21B224KBFNNNE,Samsung Electro-Mechanics,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL21B224KBFNNNE
+CAPACITOR,Capacitor Cerámico 470nF 0805,CL21B474KOFNNNE,Samsung Electro-Mechanics,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL21B474KOFNNNE
+CAPACITOR,Capacitor Cerámico 1uF 0805,CL21B105KAFNNNE,Samsung Electro-Mechanics,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL21B105KAFNNNE
+CAPACITOR,Capacitor Cerámico 2.2uF 0805,CL21B225KOFNNNE,Samsung Electro-Mechanics,6.0,0.12,0.72,4602,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL21B225KOFNNNE
+CAPACITOR,Capacitor Cerámico 4.7uF 0805,CL21B475KOFNNNE,Samsung Electro-Mechanics,6.0,0.25,1.50,9587,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL21B475KOFNNNE
+CAPACITOR,Capacitor Cerámico 10uF 0805,CL21B106KOQNNNE,Samsung Electro-Mechanics,6.0,0.14,0.84,5368,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL21B106KOQNNNE
+CAPACITOR,Capacitor Cerámico 22uF 0805,CL21A226MQQNNNE,Samsung Electro-Mechanics,6.0,0.13,0.78,4985,https://www.mouser.com/ProductDetail/Samsung-Electro-Mechanics/CL21A226MQQNNNE
+CAPACITOR,Capacitor Electrolítico 100uF,EEE-FK1H101P,Panasonic,6.0,0.76,4.56,29143,https://www.mouser.com/ProductDetail/Panasonic/EEE-FK1H101P
+RESISTENCIA,Resistencia 0 Ohm 0805,RC0805JR-070RL,YAGEO,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/YAGEO/RC0805JR-070RL
+RESISTENCIA,Resistencia 100 Ohm 0805,RC0805FR-07100RL,YAGEO,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-07100RL
+RESISTENCIA,Resistencia 220 Ohm 0805,RC0805FR-07220RL,YAGEO,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-07220RL
+RESISTENCIA,Resistencia 1k Ohm 0805,RC0805FR-071KL,YAGEO,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-071KL
+RESISTENCIA,Resistencia 1.5k Ohm 0805,RC0805FR-071K5L,YAGEO,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-071K5L
+RESISTENCIA,Resistencia 2.2k Ohm 0805,RC0805FR-072K2L,YAGEO,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-072K2L
+RESISTENCIA,Resistencia 3.3k Ohm 0805,RC0805FR-073K3L,YAGEO,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-073K3L
+RESISTENCIA,Resistencia 4.7k Ohm 0805,RC0805FR-074K7L,YAGEO,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-074K7L
+RESISTENCIA,Resistencia 5.1k Ohm 0805,RC0805FR-075K1L,YAGEO,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-075K1L
+RESISTENCIA,Resistencia 6.8k Ohm 0805,RC0805FR-076K8L,YAGEO,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-076K8L
+RESISTENCIA,Resistencia 10k Ohm 0805,RC0805FR-0710KL,YAGEO,6.0,0.11,0.66,4218,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-0710KL
+RESISTENCIA,Resistencia 15k Ohm 0805,RC0805FR-0715KL,YAGEO,6.0,0.13,0.78,4985,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-0715KL
+RESISTENCIA,Resistencia 47k Ohm 0805,RC0805FR-0747KL,YAGEO,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-0747KL
+TOTAL,120 Componentes en total,-,-,120.0,-,62.12,397009,Tasa de cambio: 1 USD = 6391 PYG. Costo por persona (3 integrantes): $20.71 USD (132336 PYG)
