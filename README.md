@@ -1,4 +1,4 @@
-# 🏭 Cinta Transportadora Inteligente - Clasificador de Objetos con IA e IoT
+# 🏭 Clasificador de Objetos mediante cinta transportadora impulsado por IA
 
 ![Status](https://img.shields.io/badge/Status-Advanced__Testing-green)
 ![Hardware](https://img.shields.io/badge/Hardware-Assembled__&__Tested-blue)
