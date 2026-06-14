@@ -239,7 +239,7 @@ El proceso de fabricación y ensamblaje de la PCB siguió un flujo profesional d
 3. **Correcciones con estación de aire caliente** y aplicación de flux para retoques.
 4. **Soldadura manual THT** de componentes de inserción (USB Type-C, botones, conectores).
 5. **Inspección óptica y térmica** bajo microscopio estereoscópico de laboratorio.
-6. **Limpieza final** con alcohol isopropílico (IPA).
+6. **Limpieza final** con alcohol isopropílico.
 
 ---
 
@@ -255,15 +255,21 @@ El proceso de fabricación y ensamblaje de la PCB siguió un flujo profesional d
 │   │   ├── diodo schottky/
 │   │   └── ... (resistencias, capacitores, headers, etc.)
 │   ├── 📂 Diseño final/                  # Archivos finales del proyecto KiCad
-│   │   ├── Grupo15.kicad_pcb
-│   │   ├── Grupo15.kicad_sch
-│   │   └── Grupo15.kicad_pro
+│   │   └── 📂 Grupo15/                   # Proyecto final KiCad de producción
+│   │       ├── Grupo15.kicad_pcb         # Layout ruteado en KiCad (883 KB)
+│   │       ├── Grupo15.kicad_sch         # Esquemático en KiCad (396 KB)
+│   │       ├── Grupo15.kicad_pro         # Archivo de proyecto KiCad
+│   │       └── 📂 production/            # Archivos Gerber y de manufactura (BOM, positions, etc.)
+│   │           ├── Grupo15_Gerbers.zip   # Archivo zip con archivos Gerber
+│   │           ├── Grupo15_Gerbers_bom.csv
+│   │           └── ...
 │   ├── 📂 ESP32_S3_WROOM2_N32R16_29/     # Footprint y símbolo del ESP32-S3
 │   ├── 🖼️ Diseño.jpeg                    # Esquemático del diseño
-│   ├── 🖼️ Placa pcb.jpeg                 # Layout de la PCB
-│   ├── 🖼️ Placa 3D.jpeg                  # Render 3D (vista inferior)
-│   └── 🖼️ Placa 3D parte superior.jpeg   # Render 3D (vista superior)
-├── 📂 Software/                          # Firmware en C++/Arduino
+│   ├── 🖼️ pcb_ruteado.PNG                 # Layout de la PCB (ruteado final)
+│   ├── 🖼️ pcb_3d.PNG                     # Render 3D de la PCB (vista superior)
+│   ├── 🖼️ pcb_3d_1.png                   # Render 3D (visto sin componentess)
+│   └── 🖼️ pcb_3d_vistinferior.png        # Render 3D de la PCB (vista inferior)
+├── 📂 Software/                          # Firmware en Arduino
 │   ├── 📄 P3_2P_code.txt                 # Firmware de producción principal
 │   └── 📂 Pruebas/                       # Scripts y resultados de pruebas
 │       ├── Prueba camara.txt
