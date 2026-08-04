@@ -1,0 +1,6 @@
+{
+  "name": "Cinta Transportadora IA",
+  "description": "Sistema de monitoreo y control en tiempo real para cinta transportadora automatizada con ESP32 S3 y Google Sheets",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
