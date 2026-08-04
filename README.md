@@ -10,7 +10,7 @@
 
 **Sistema embebido de clasificación automatizada de objetos sobre cinta transportadora, integrando visión artificial, conectividad IoT, interfaz de usuario y control en tiempo real.**
 
-*Proyecto 3 & 4 — Mecatrónica (MCT) — FIUNA, 2026*
+*Proyecto 4 — Mecatrónica (MCT) — FIUNA, 2026*
 
 </div>
 
@@ -40,7 +40,7 @@
 
 Este repositorio contiene el firmware, los diseños de hardware, el proyecto de software y la documentación completa del sistema embebido inteligente de clasificación automatizada de objetos en una cinta transportadora. El proyecto integra **visión artificial**, **conectividad IoT** mediante un servidor de IA auto-hospedado y **control secuencial en tiempo real** sobre un microcontrolador ESP32-S3.
 
-El sistema captura imágenes de objetos transportados por una cinta, las envía a un modelo de Inteligencia Artificial alojado en un servidor privado **n8n**, y en función de la clasificación recibida (por color: verde, amarillo, rojo), acciona un servomotor que desvía los objetos anómalos a contenedores diferenciados.
+El sistema captura imágenes de objetos transportados por una cinta, las envía a un modelo de Inteligencia Artificial alojado en un servidor privado, y en función de la clasificación recibida (por color: verde, amarillo, rojo), acciona un servomotor que desvía los objetos anómalos a contenedores diferenciados.
 
 ---
 
@@ -209,7 +209,7 @@ El diseño electrónico de la PCB de **2 capas** fue optimizado mediante un plan
 
 ## 🤖 Servidor de IA — Infraestructura IoT
 
-La clasificación de objetos se realiza mediante un flujo de automatización alojado en un servidor privado autoalojado (*n8n*), que actúa como puente entre el ESP32-S3 y el modelo de Inteligencia Artificial.
+La clasificación de objetos se realiza mediante un flujo de automatización alojado en un servidor privado autoalojado, que actúa como puente entre el ESP32-S3 y el modelo de Inteligencia Artificial.
 
 ### Flujo de Comunicación
 
@@ -223,11 +223,10 @@ ESP32-S3  ◀──── JSON { "color": "..." } ◀─────────
 
 | Aspecto | Detalle |
 | :--- | :--- |
-| **Plataforma** | Servidor autoalojado (n8n) |
+| **Plataforma** | Servidor autoalojado |
 | **Protocolo** | HTTP POST Multipart |
 | **Payload de envío** | Base64 (texto) + Binario JPEG |
 | **Formato de respuesta** | JSON (`{ "color": "green" \| "yellow" \| "red" }`) |
-| **Seguridad** | WiFiClientSecure (HTTPS) |
 | **Latencia** | Dentro de los márgenes operativos previstos |
 
 ---
@@ -371,12 +370,6 @@ El proceso de fabricación y ensamblaje de la PCB siguió un flujo profesional d
 ## 📄 Licencia
 
 Este proyecto está licenciado bajo la **Licencia MIT**. Consulte el archivo [LICENSE](LICENSE) para más detalles.
-
----
-
-## 📄 Walkthrough (Registro de Cambios)
-
-Los detalles y verificación de las modificaciones realizadas en este archivo se encuentran en el [walkthrough.md](file:///C:/Users/Sol%20Fernandez/.gemini/antigravity-ide/brain/8da28c12-5b99-4789-8ec2-9ba68a828a2b/walkthrough.md).
 
 ---
 
