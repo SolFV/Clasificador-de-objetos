@@ -2,15 +2,15 @@
 
 <div align="center">
 
-![Status](https://img.shields.io/badge/Estado-Proyecto%20Finalizado-brightgreen?style=for-the-badge)
+![Status](https://img.shields.io/badge/Estado-Proyecto%204%20(En%20Desarrollo)-orange?style=for-the-badge)
 ![Hardware](https://img.shields.io/badge/Hardware-Ensamblado%20%26%20Verificado-blue?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/Plataforma-ESP32--S3-orange?style=for-the-badge)
 ![Accuracy](https://img.shields.io/badge/Precisión-93.33%25-success?style=for-the-badge)
 ![License](https://img.shields.io/badge/Licencia-MIT-yellow?style=for-the-badge)
 
-**Sistema embebido de clasificación automatizada de objetos sobre cinta transportadora, integrando visión artificial, conectividad IoT y control en tiempo real.**
+**Sistema embebido de clasificación automatizada de objetos sobre cinta transportadora, integrando visión artificial, conectividad IoT, interfaz de usuario y control en tiempo real.**
 
-*Proyecto 3 — Mecatrónica (MCT) — FIUNA, 2026*
+*Proyecto 3 & 4 — Mecatrónica (MCT) — FIUNA, 2026*
 
 </div>
 
@@ -19,7 +19,9 @@
 ## 📋 Tabla de Contenidos
 
 - [Descripción General](#-descripción-general)
-- [Estado del Proyecto](#-estado-del-proyecto--proyecto-finalizado)
+- [Estado del Proyecto](#-estado-del-proyecto)
+- [Novedades Planificadas — Proyecto 4](#-novedades-planificadas--proyecto-4)
+- [Cronograma de Actividades y Diagrama de Gantt](#-cronograma-de-actividades-y-diagrama-de-gantt)
 - [Cómo Funciona](#-cómo-funciona)
 - [Resultados Obtenidos](#-resultados-obtenidos)
 - [Arquitectura de Hardware](#️-arquitectura-de-hardware)
@@ -36,17 +38,17 @@
 
 ## 📖 Descripción General
 
-Este repositorio contiene el firmware, los diseños de hardware y la documentación completa del sistema embebido inteligente de clasificación automatizada de objetos en una cinta transportadora. El proyecto integra **visión artificial**, **conectividad IoT** mediante un servidor de IA auto-hospedado y **control secuencial en tiempo real** sobre un microcontrolador ESP32-S3.
+Este repositorio contiene el firmware, los diseños de hardware, el proyecto de software y la documentación completa del sistema embebido inteligente de clasificación automatizada de objetos en una cinta transportadora. El proyecto integra **visión artificial**, **conectividad IoT** mediante un servidor de IA auto-hospedado y **control secuencial en tiempo real** sobre un microcontrolador ESP32-S3.
 
-El sistema captura imágenes de objetos transportados por una cinta, las envía a un modelo de Inteligencia Artificial alojado en un servidor privado **n8n**, y en función de la clasificación recibida, acciona un servomotor que desvía los objetos anómalos a contenedores diferenciados.
+El sistema captura imágenes de objetos transportados por una cinta, las envía a un modelo de Inteligencia Artificial alojado en un servidor privado **n8n**, y en función de la clasificación recibida (por color: verde, amarillo, rojo), acciona un servomotor que desvía los objetos anómalos a contenedores diferenciados.
 
 ---
 
-## ✅ Estado del Proyecto — Proyecto Finalizado
+## ✅ Estado del Proyecto
 
-> **El proyecto ha sido completado exitosamente con resultados validados experimentalmente.**
+> **La etapa P3 (Diseño Electrónico, PCB e Integración Base) ha sido completada exitosamente con resultados validados experimentalmente. Actualmente el proyecto se encuentra en desarrollo de la etapa P4 (Diseño Mecánico Formal, Dashboard GUI y Control de Acceso).**
 
-Se han superado con éxito todas las fases del proyecto: diseño esquemático, ruteo en KiCad, fabricación y ensamblaje de la PCB, integración completa de software/hardware y validación final con un lote de prueba de 30 cajas.
+### Hitos Alcanzados (Proyecto 3):
 
 | Hito | Estado |
 | :--- | :---: |
@@ -54,17 +56,67 @@ Se han superado con éxito todas las fases del proyecto: diseño esquemático, r
 | Fabricación y ensamblaje de la PCB | ✅ Completado |
 | Validación de subsistemas individuales | ✅ Completado |
 | Integración total Software / Hardware | ✅ Completado |
-| Configuración del servidor de IA | ✅ Completado |
+| Configuración del servidor de IA (n8n) | ✅ Completado |
 | Pruebas finales con lote de 30 cajas | ✅ Completado |
 | Precisión de clasificación alcanzada | **93.33%** |
 
-### Subsistemas Verificados:
+### Hitos Planificados (Proyecto 4):
+
+| Hito / Novedad | Estado |
+| :--- | :---: |
+| Modelado 3D CAD de la estructura completa y planos técnicos | 🔄 En desarrollo |
+| Fabricación mecánica en PLA/PETG y perfilería de aluminio | 🔄 En desarrollo |
+| Dashboard Web embebido en ESP32-S3 (GUI RT & Control) | 🔄 En desarrollo |
+| Aplicación móvil Android (`Software/SnapshotP4.0`) | 🔄 En desarrollo |
+| Registro local en memoria (*logging*) | 🔄 En desarrollo |
+| Control de acceso y autenticación en interfaz web | 🔄 En desarrollo |
+
+### Subsistemas Verificados (P3):
 
 - 🟢 **Adquisición Óptica:** Cámara OV5640 operando en modo SVGA (800×600), fotogramas YUV422 almacenados en PSRAM (8 MB verificados).
 - 🟢 **Conectividad IoT:** Conexión WiFi estable, envío exitoso del payload (Base64 + binario JPEG) al webhook del servidor autoalojado. Respuestas del modelo de IA recibidas correctamente.
 - 🟢 **Motor DC y Cinta:** PWM a 20 kHz con 39.2% de duty cycle, desplazamiento uniforme gestionado por driver DRV8873.
 - 🟢 **Clasificación Mecánica:** Servomotor DFRobot SER0006 con respuesta precisa (0°, 90° o 180°) y tiempo de retención de 5 segundos.
 - 🟢 **Sensor de Proximidad:** Sensor IR E18-D80NK con detección fiable del paso de objetos.
+
+---
+
+## 🚀 Novedades Planificadas — Proyecto 4
+
+La nueva etapa del proyecto amplía las capacidades mecánicas, de control y de interacción usuario-sistema a través de tres pilares principales:
+
+### 1️⃣ Diseño Mecánico Formal
+- **Modelado 3D CAD:** Diseño tridimensional completo de la estructura en software CAD, abarcando el bastidor principal, soporte direccional para la cámara OV5640, sistema de desvío accionado por servomotor y guías ajustables de contenedores.
+- **Planos de Fabricación:** Elaboración de planos constructivos detallados con especificación rigurosa de tolerancias dimensionales y geométricas.
+- **Análisis Estructural:** Evaluación estructural básica para asegurar resistencia mecánica, estabilidad y comportamiento libre de vibraciones excesivas durante el movimiento de la cinta.
+- **Manufactura de Componentes:** Fabricación mediante **impresión 3D (PLA / PETG)** para piezas personalizadas y **perfilería de aluminio** estructural para el bastidor base.
+
+### 2️⃣ Interfaz Gráfica de Usuario (GUI) para Comando y Control
+- **Dashboard Web Embebido:** Servidor web alojado directamente en el ESP32-S3, accesible mediante navegador desde cualquier dispositivo en la red local.
+- **Indicadores en Tiempo Real:** Monitorización continua del estado operativo (estado de conexión WiFi, ciclo de cinta, peticiones a la IA).
+- **Controles Manuales:** Mandos interactivos para inicio, parada y pausa de la cinta transportadora.
+- **Panel de Estadísticas:** Visualización gráfica de métricas de producción (conteo total de objetos, desglose por categoría: 🟢 verde, 🟡 amarillo, 🔴 rojo, y porcentaje de precisión).
+- **Aplicación Móvil Android (Snapshot P4.0):** Integración del proyecto de aplicación Android en `Software/SnapshotP4.0/` (con ejecutable `Cinta IA.apk`) para control e inspección remota.
+
+### 3️⃣ Mejoras Complementarias
+- **Registro Local en Memoria (Logging):** Almacenamiento en memoria no volátil de eventos del sistema, registros de fallos e historial de conteos.
+- **Control de Acceso Básico:** Sistema de autenticación de usuario para la interfaz web, asegurando que solo personal autorizado acceda a los mandos manuales y configuraciones.
+
+---
+
+## 📅 Cronograma de Actividades y Diagrama de Gantt
+
+El desarrollo y seguimiento de las actividades de la etapa P4 se rige por la planificación temporal representada en el siguiente diagrama de Gantt:
+
+<div align="center">
+
+![Diagrama de Gantt P4](DiagramadeGantt.png)
+
+</div>
+
+### Documentos de Planificación:
+- 📄 **[Cronograma de Actividades P4 (PDF)](Cronograma%20de%20actividades%20P4.pdf)** — Documento oficial detallado con las fases y asignación de tareas.
+- 📊 **[Cronograma de Actividades (Excel)](Cronograma%20de%20actividades.xlsx)** — Planilla interactiva para el seguimiento de avance del proyecto.
 
 ---
 
@@ -79,7 +131,7 @@ El **motor DC NOVAMAX 6V 800 RPM** desplaza los objetos sobre la cinta transport
 La cámara **OV5640** captura un fotograma en resolución **SVGA (800×600)** en formato **YUV422**, que se almacena en la **PSRAM**. Posteriormente, se comprime a formato **JPEG** y se codifica en **Base64** para optimizar la transmisión.
 
 ### 3️⃣ Inferencia Remota (IoT)
-El ESP32-S3 realiza una petición **HTTP POST Multipart** dirigida al webhook alojado en el servidor privado autoalojado. El modelo de Inteligencia Artificial evalúa la imagen y retorna una estructura **JSON** con la clasificación por color.
+El ESP32-S3 realiza una petición **HTTP POST Multipart** dirigida al webhook alojado en el servidor privado autoalojado (n8n). El modelo de Inteligencia Artificial evalúa la imagen y retorna una estructura **JSON** con la clasificación por color.
 
 ### 4️⃣ Actuación y Clasificación
 El microcontrolador parsea la respuesta JSON recibida y acciona el **servomotor DFRobot SER0006**:
@@ -157,13 +209,13 @@ El diseño electrónico de la PCB de **2 capas** fue optimizado mediante un plan
 
 ## 🤖 Servidor de IA — Infraestructura IoT
 
-La clasificación de objetos se realiza mediante un flujo de automatización alojado en un servidor privado autoalojado (*self-hosted*), que actúa como puente entre el ESP32-S3 y el modelo de Inteligencia Artificial.
+La clasificación de objetos se realiza mediante un flujo de automatización alojado en un servidor privado autoalojado (*n8n*), que actúa como puente entre el ESP32-S3 y el modelo de Inteligencia Artificial.
 
 ### Flujo de Comunicación
 
 ```
 ESP32-S3  ──HTTP POST Multipart──▶  Servidor Autoalojado (Webhook)  ──▶  Modelo de IA
-                                                                      │
+                                                                       │
 ESP32-S3  ◀──── JSON { "color": "..." } ◀──────────────────────────────┘
 ```
 
@@ -171,14 +223,12 @@ ESP32-S3  ◀──── JSON { "color": "..." } ◀─────────
 
 | Aspecto | Detalle |
 | :--- | :--- |
-| **Plataforma** | Servidor autoalojado (self-hosted) |
+| **Plataforma** | Servidor autoalojado (n8n) |
 | **Protocolo** | HTTP POST Multipart |
 | **Payload de envío** | Base64 (texto) + Binario JPEG |
 | **Formato de respuesta** | JSON (`{ "color": "green" \| "yellow" \| "red" }`) |
 | **Seguridad** | WiFiClientSecure (HTTPS) |
 | **Latencia** | Dentro de los márgenes operativos previstos |
-
-El servidor autoalojado recibe la imagen capturada por la cámara OV5640, la procesa a través del modelo de IA, y devuelve la clasificación como un campo `color` en formato JSON que el ESP32-S3 interpreta para accionar el servomotor correspondiente.
 
 ---
 
@@ -204,9 +254,14 @@ El servidor autoalojado recibe la imagen capturada por la cámara OV5640, la pro
 | `parseColor()` | Parser JSON que extrae el campo `color` de la respuesta del servidor |
 | `moveServoForColor()` / `procesarColor()` | Control del actuador según la clasificación recibida |
 
-### Archivo Principal
+### Firmware Principal
 
 - 📄 **`Software/P3_2P_code.txt`** — Firmware de producción completo (C++/Arduino para ESP32-S3)
+
+### Aplicación y Snapshot P4.0
+
+- 📂 **`Software/SnapshotP4.0/`** — Proyecto Android de interfaz de usuario y control.
+  - 📱 **`Cinta IA.apk`** — Aplicación Android compilada para control del sistema.
 
 ### Scripts de Prueba (`Software/Pruebas/`)
 
@@ -267,18 +322,25 @@ El proceso de fabricación y ensamblaje de la PCB siguió un flujo profesional d
 │   ├── 🖼️ Diseño.jpeg                    # Esquemático del diseño
 │   ├── 🖼️ pcb_ruteado.PNG                 # Layout de la PCB (ruteado final)
 │   ├── 🖼️ pcb_3d.PNG                     # Render 3D de la PCB (vista superior)
-│   ├── 🖼️ pcb_3d_1.png                   # Render 3D (visto sin componentess)
+│   ├── 🖼️ pcb_3d_1.png                   # Render 3D (visto sin componentes)
 │   └── 🖼️ pcb_3d_vistinferior.png        # Render 3D de la PCB (vista inferior)
-├── 📂 Software/                          # Firmware en Arduino
-│   ├── 📄 P3_2P_code.txt                 # Firmware de producción principal
-│   └── 📂 Pruebas/                       # Scripts y resultados de pruebas
-│       ├── Prueba camara.txt
-│       ├── Prueba PSRAM.txt
-│       ├── Resultado camara.txt
-│       ├── Resultados PSRAM.txt
-│       ├── 🖼️ Imagen_camara.jpeg
-│       └── 🖼️ Evidencia_fecha_de_resultado.jpeg
+├── 📂 Software/                          # Firmware y aplicaciones
+│   ├── 📄 P3_2P_code.txt                 # Firmware de producción principal (ESP32-S3)
+│   ├── 📂 Pruebas/                       # Scripts y resultados de pruebas
+│   │   ├── Prueba camara.txt
+│   │   ├── Prueba PSRAM.txt
+│   │   ├── Resultado camara.txt
+│   │   ├── Resultados PSRAM.txt
+│   │   ├── 🖼️ Imagen_camara.jpeg
+│   │   └── 🖼️ Evidencia_fecha_de_resultado.jpeg
+│   └── 📂 SnapshotP4.0/                  # Aplicación Android (GUI P4 / Control)
+│       ├── 📱 Cinta IA.apk               # Ejecutable instalable en Android
+│       ├── 📄 build.gradle.kts           # Configuración Gradle
+│       └── ...                           # Código fuente Kotlin y recursos
 ├── 📄 BOM.csv                            # Lista de materiales con costos y MPN
+├── 📄 Cronograma de actividades P4.pdf   # Cronograma oficial de la Etapa P4 (PDF)
+├── 📊 Cronograma de actividades.xlsx     # Planilla de seguimiento de actividades (Excel)
+├── 🖼️ DiagramadeGantt.png               # Diagrama de Gantt del proyecto P4
 ├── 🖼️ diagrama-flujo.png                 # Diagrama de flujo del sistema
 ├── 📄 LICENSE                            # Licencia MIT
 └── 📄 README.md                          # Este archivo
@@ -312,8 +374,14 @@ Este proyecto está licenciado bajo la **Licencia MIT**. Consulte el archivo [LI
 
 ---
 
+## 📄 Walkthrough (Registro de Cambios)
+
+Los detalles y verificación de las modificaciones realizadas en este archivo se encuentran en el [walkthrough.md](file:///C:/Users/Sol%20Fernandez/.gemini/antigravity-ide/brain/8da28c12-5b99-4789-8ec2-9ba68a828a2b/walkthrough.md).
+
+---
+
 <div align="center">
 
-*Proyecto 3 — Mecatrónica (MCT) — FIUNA — Universidad Nacional de Asunción — 2026*
+*Proyecto 3 & 4 — Mecatrónica (MCT) — FIUNA — Universidad Nacional de Asunción — 2026*
 
 </div>
