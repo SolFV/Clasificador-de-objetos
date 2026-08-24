@@ -1,13 +1,13 @@
 Codigo final funcionando:
 // =====================================================
-// SISTEMA COMPLETO: Cámara (YUV422 SVGA) + Webhook(n8n)
+// SISTEMA COMPLETO: Cámara (YUV422 SVGA) + Webhook (Servidor IA)
 //                   + Sensor IR + Motor DC (DRV8873) + Servo
 // ESP32-S3 / Arduino-ESP32 core 2.0.x
 //
 // Flujo:
 //   - Motor DC gira (vel 70) sin parar.
 //   - IR detecta objeto (HIGH) -> para motor, ESPERA (delay enfoque),
-//     toma foto y envía a n8n.
+//     toma foto y envía al servidor.
 //   - Respuesta del webhook:
 //       "verde"    -> servo NO se mueve, motor reanuda.
 //       "amarillo" -> servo 90° (5 s y vuelve a 0), motor reanuda.
@@ -23,19 +23,19 @@ Codigo final funcionando:
 #include <ESP32Servo.h>
 
 // ============== WIFI ==============
-// OJO: deben ser la red donde corre n8n. Si cambiaste de red, ajusta esto
+// OJO: deben ser la red donde corre el servidor. Si cambiaste de red, ajusta esto
 // y tambien la IP del WEBHOOK_URL de abajo.
 const char* SSID_BUSCAR = "OPPO Reno11 F 5G";       // subcadena de tu SSID
 const char* WIFI_PASS   = "123456789";
 
-// ============== WEBHOOK (n8n en tu notebook) ==============http://192.168.100.2:5678/webhook/572b7ae6-a35c-47cf-968a-02e008a7816e
+// ============== WEBHOOK (Servidor IA en tu notebook) ==============http://10.47.199.114:5678/webhook/572b7ae6-a35c-47cf-968a-02e008a7816e
 const char* WEBHOOK_URL =
     "http://10.47.199.114:5678/webhook/"
     "572b7ae6-a35c-47cf-968a-02e008a7816e";
 #define WH_BOUNDARY "----esp32s3boundary7d3a91fED"
 
 // ============== CALIDAD FOTO WEBHOOK ==============
-// Calidad JPEG de la foto que se manda a n8n (0-100, mayor = mejor).
+// Calidad JPEG de la foto que se manda al servidor (0-100, mayor = mejor).
 const int CALIDAD_WEBHOOK = 80;
 
 // ============== SENSOR IR ==============

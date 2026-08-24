@@ -1,0 +1,11 @@
+# Secrets and local MCP configurations
+.mcp.json
+.vscode/mcp.json
+mcp_config.json
+.env
+.env.local
+
+# KiCad and SolidWorks temporary lock files
+.history/
+~*.lck
+~$*

@@ -10,7 +10,7 @@
 
 **Sistema embebido de clasificación automatizada de objetos sobre cinta transportadora, integrando visión artificial, conectividad IoT, interfaz de usuario y control en tiempo real.**
 
-*Proyecto 4 — Mecatrónica (MCT) — FIUNA, 2026*
+*Proyecto 3 & 4 — Mecatrónica (MCT) — FIUNA, 2026*
 
 </div>
 
@@ -40,7 +40,7 @@
 
 Este repositorio contiene el firmware, los diseños de hardware, el proyecto de software y la documentación completa del sistema embebido inteligente de clasificación automatizada de objetos en una cinta transportadora. El proyecto integra **visión artificial**, **conectividad IoT** mediante un servidor de IA auto-hospedado y **control secuencial en tiempo real** sobre un microcontrolador ESP32-S3.
 
-El sistema captura imágenes de objetos transportados por una cinta, las envía a un modelo de Inteligencia Artificial alojado en un servidor privado, y en función de la clasificación recibida (por color: verde, amarillo, rojo), acciona un servomotor que desvía los objetos anómalos a contenedores diferenciados.
+El sistema captura imágenes de objetos transportados por una cinta, las envía a un modelo de Inteligencia Artificial alojado en un servidor privado de IA, y en función de la clasificación recibida (por color: verde, amarillo, rojo), acciona un servomotor que desvía los objetos anómalos a contenedores diferenciados.
 
 ---
 
@@ -56,7 +56,7 @@ El sistema captura imágenes de objetos transportados por una cinta, las envía 
 | Fabricación y ensamblaje de la PCB | ✅ Completado |
 | Validación de subsistemas individuales | ✅ Completado |
 | Integración total Software / Hardware | ✅ Completado |
-| Configuración del servidor de IA (n8n) | ✅ Completado |
+| Configuración del servidor de IA | ✅ Completado |
 | Pruebas finales con lote de 30 cajas | ✅ Completado |
 | Precisión de clasificación alcanzada | **93.33%** |
 
@@ -131,7 +131,7 @@ El **motor DC NOVAMAX 6V 800 RPM** desplaza los objetos sobre la cinta transport
 La cámara **OV5640** captura un fotograma en resolución **SVGA (800×600)** en formato **YUV422**, que se almacena en la **PSRAM**. Posteriormente, se comprime a formato **JPEG** y se codifica en **Base64** para optimizar la transmisión.
 
 ### 3️⃣ Inferencia Remota (IoT)
-El ESP32-S3 realiza una petición **HTTP POST Multipart** dirigida al webhook alojado en el servidor privado autoalojado (n8n). El modelo de Inteligencia Artificial evalúa la imagen y retorna una estructura **JSON** con la clasificación por color.
+El ESP32-S3 realiza una petición **HTTP POST Multipart** dirigida al webhook alojado en el servidor privado autoalojado de IA. El modelo de Inteligencia Artificial evalúa la imagen y retorna una estructura **JSON** con la clasificación por color.
 
 ### 4️⃣ Actuación y Clasificación
 El microcontrolador parsea la respuesta JSON recibida y acciona el **servomotor DFRobot SER0006**:
@@ -223,7 +223,7 @@ ESP32-S3  ◀──── JSON { "color": "..." } ◀─────────
 
 | Aspecto | Detalle |
 | :--- | :--- |
-| **Plataforma** | Servidor autoalojado |
+| **Plataforma** | Servidor autoalojado de IA |
 | **Protocolo** | HTTP POST Multipart |
 | **Payload de envío** | Base64 (texto) + Binario JPEG |
 | **Formato de respuesta** | JSON (`{ "color": "green" \| "yellow" \| "red" }`) |
