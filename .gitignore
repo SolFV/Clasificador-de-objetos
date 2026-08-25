@@ -4,8 +4,10 @@
 mcp_config.json
 .env
 .env.local
+.agents/
 
 # KiCad and SolidWorks temporary lock files
 .history/
 ~*.lck
 ~$*
+
