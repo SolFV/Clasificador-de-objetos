@@ -1,7 +1,7 @@
 Categoría,Componente / Descripción,MPN (Mfr Part Number),Marca / Fabricante,Cantidad,Unitario (USD),Total (USD),Total (PYG),Proveedor / Link
 MCU,Microcontrolador ESP32-S3,ESP32-S3-WROOM-1-N16R8,Espressif Systems,2.0,8.72,17.44,111459,https://www.mouser.com/ProductDetail/Espressif-Systems/ESP32-S3-WROOM-1-N16R8
 LDO,Regulador LDO (3.3V),LD1117S33TR,STMicroelectronics,2.0,0.34,0.68,4346,https://www.mouser.com/ProductDetail/STMicroelectronics/LD1117S33TR
-DRIVER,Driver de Motor H-Bridge,DRV8873SPWPRQ1,Texas Instruments,2.0,4.13,8.26,52790,https://www.mouser.com/ProductDetail/Texas-Instruments/DRV8873SPWPRQ1
+MOTOR,Motor paso a paso NEMA 23 (12.6 kgf-cm),23HS5628,NEMA / Electrónica Paraguay,1.0,46.94,46.94,300000,https://electronicaparaguay.com/
 USB-C,Conector USB Tipo C Hembra 16 Pines,USB4510-03-1-A,GCT,1.0,0.84,0.84,5368,https://www.mouser.com/ProductDetail/GCT/USB4510-03-1-A
 CAMERA,Módulo de Cámara OV5640 (5 MP),5840 (Adafruit),Adafruit,1.0,9.95,9.95,63590,https://www.adafruit.com/product/5840
 SERVO,Servomotor 180 Grados,SER0006,DFRobot,1.0,3.63,3.63,23199,https://www.dfrobot.com/product-2525.html
@@ -30,4 +30,11 @@ RESISTENCIA,Resistencia 6.8k Ohm 0805,RC0805FR-076K8L,YAGEO,6.0,0.10,0.60,3835,h
 RESISTENCIA,Resistencia 10k Ohm 0805,RC0805FR-0710KL,YAGEO,6.0,0.11,0.66,4218,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-0710KL
 RESISTENCIA,Resistencia 15k Ohm 0805,RC0805FR-0715KL,YAGEO,6.0,0.13,0.78,4985,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-0715KL
 RESISTENCIA,Resistencia 47k Ohm 0805,RC0805FR-0747KL,YAGEO,6.0,0.10,0.60,3835,https://www.mouser.com/ProductDetail/YAGEO/RC0805FR-0747KL
-TOTAL,120 Componentes en total,-,-,120.0,-,62.12,397009,Tasa de cambio: 1 USD = 6391 PYG. Costo por persona (3 integrantes): $20.71 USD (132336 PYG)
+SUBTOTAL,Componentes adquiridos e incorporados P4,-,-,119.0,-,96.06,644219,Tasa oficial de referencia: 1 USD = 6391 PYG. Subtotal componentes comprados Proyecto 4
+PREEXISTENTE,Placa propia ESP32-S3 con cámara OV5640 (etapa anterior),Custom PCB,Proyecto 3,1.0,0.00,0.00,0,Reutilizada de la etapa anterior sin costo adicional
+PREEXISTENTE,Servomotor de desvío 180°,SER0006,DFRobot,1.0,0.00,0.00,0,Reutilizado de la etapa anterior
+PREEXISTENTE,Controlador L298N para motor paso a paso,L298N Dual H-Bridge,STMicroelectronics,1.0,0.00,0.00,0,Etapa de potencia disponible / prestada
+PREEXISTENTE,Notebook con servidor n8n autoalojado,Host Local,FIUNA,1.0,0.00,0.00,0,Infraestructura de cómputo para flujo de visión IA
+PREEXISTENTE,Licencia / Estación SolidWorks CAD,SolidWorks 2024,FIUNA,1.0,0.00,0.00,0,Estación de diseño mecánico y planos técnicos
+PREEXISTENTE,Multímetro y herramientas de taller/banco,-,FIUNA / Taller,1.0,0.00,0.00,0,Instrumentación y banco de pruebas
+TOTAL GENERAL,Costo Total Incremental P4,-,-,-,-,96.06,644219,Costo por integrante (3 personas): $32.02 USD (214740 PYG)

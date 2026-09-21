@@ -1,16 +1,20 @@
-# 🏭 Clasificador de Objetos mediante Cinta Transportadora Impulsado por IA
+# 🏭 Clasificador Automático de Cajas con Visión Artificial
+### Proyecto 4: Interfaz de Usuario y Estructura Mecánica de Cinta Transportadora
 
 <div align="center">
 
-![Status](https://img.shields.io/badge/Estado-Proyecto%204%20(En%20Desarrollo)-orange?style=for-the-badge)
-![Hardware](https://img.shields.io/badge/Hardware-Ensamblado%20%26%20Verificado-blue?style=for-the-badge)
-![Platform](https://img.shields.io/badge/Plataforma-ESP32--S3-orange?style=for-the-badge)
-![Accuracy](https://img.shields.io/badge/Precisión-93.33%25-success?style=for-the-badge)
+![Status](https://img.shields.io/badge/Estado-1er%20Parcial%20Completado%20%26%20Validado-success?style=for-the-badge)
+![Hardware](https://img.shields.io/badge/Hardware-NEMA%2023%20%2B%20ESP32--S3%20PCB-blue?style=for-the-badge)
+![CAD](https://img.shields.io/badge/CAD-SolidWorks%202024-red?style=for-the-badge)
+![Vision AI](https://img.shields.io/badge/Visi%C3%B3n-n8n%20%2B%20GPT--4o--mini-brightgreen?style=for-the-badge)
+![Platform](https://img.shields.io/badge/Plataforma-ESP32--S3%20%28PSRAM%208MB%29-orange?style=for-the-badge)
 ![License](https://img.shields.io/badge/Licencia-MIT-yellow?style=for-the-badge)
 
-**Sistema embebido de clasificación automatizada de objetos sobre cinta transportadora, integrando visión artificial, conectividad IoT, interfaz de usuario y control en tiempo real.**
+**Sistema mecatrónico embebido de inspección de calidad y clasificación automatizada de paquetes sobre cinta transportadora, integrando visión artificial en la nube, tracción controlada por motor paso a paso, almacenamiento de evidencias y dashboard de supervisión en tiempo real.**
 
-*Proyecto 3 & 4 — Mecatrónica (MCT) — FIUNA, 2026*
+*Facultad de Ingeniería — Universidad Nacional de Asunción (FIUNA)*  
+*Cátedra: Proyecto 4 (2do Ciclo 2026) | Septiembre de 2026*  
+*Profesores: Prof. Ing. Federico Gaona, MSc. (Teoría) — Prof. Ing. Esteban Fretes, MSc. (Práctica)*
 
 </div>
 
@@ -19,281 +23,231 @@
 ## 📋 Tabla de Contenidos
 
 - [Descripción General](#-descripción-general)
-- [Estado del Proyecto](#-estado-del-proyecto)
-- [Novedades Planificadas — Proyecto 4](#-novedades-planificadas--proyecto-4)
-- [Cronograma de Actividades y Diagrama de Gantt](#-cronograma-de-actividades-y-diagrama-de-gantt)
-- [Cómo Funciona](#-cómo-funciona)
-- [Resultados Obtenidos](#-resultados-obtenidos)
+- [Estado del Proyecto — Hitos del 1er Parcial](#-estado-del-proyecto--hitos-del-1er-parcial)
+- [Esquema General del Sistema](#-esquema-general-del-sistema)
 - [Arquitectura de Hardware](#️-arquitectura-de-hardware)
-- [Servidor de IA](#-servidor-de-ia--infraestructura-iot)
-- [Software y Firmware](#-software-y-firmware)
+  - [1. Subsistema Mecánico y Estructura (SolidWorks)](#1-subsistema-mecánico-y-estructura-solidworks)
+  - [2. Subsistema de Tracción (NEMA 23 + L298N)](#2-subsistema-de-tracción-nema-23--l298n)
+  - [3. Subsistema Electrónico de Control (PCB ESP32-S3)](#3-subsistema-electrónico-de-control-pcb-esp32-s3)
+- [Flujo de Operación y Lógica de Clasificación](#-flujo-de-operación-y-lógica-de-clasificación)
+- [Infraestructura IoT y Servidor de Visión (n8n)](#-infraestructura-iot-y-servidor-de-visión-n8n)
+- [Interfaz de Usuario (Dashboard de Supervisión)](#-interfaz-de-usuario-dashboard-de-supervisión)
+- [Resultados Experimentales del Parcial](#-resultados-experimentales-del-parcial)
 - [Costos del Proyecto](#-costos-del-proyecto)
-- [Manufactura y Ensamblaje](#-técnicas-de-manufactura-y-ensamblaje)
 - [Estructura del Repositorio](#-estructura-del-repositorio)
-- [Diagrama de Flujo](#-diagrama-de-flujo)
-- [Autores](#-autores-mct--2026)
+- [Autores y Agradecimientos](#-autores-fiuna--2026)
 - [Licencia](#-licencia)
 
 ---
 
 ## 📖 Descripción General
 
-Este repositorio contiene el firmware, los diseños de hardware, el proyecto de software y la documentación completa del sistema embebido inteligente de clasificación automatizada de objetos en una cinta transportadora. El proyecto integra **visión artificial**, **conectividad IoT** mediante un servidor de IA auto-hospedado y **control secuencial en tiempo real** sobre un microcontrolador ESP32-S3.
+El proyecto resuelve el **control de calidad en líneas de empaquetado** mediante un prototipo mecatrónico accesible y modular: una cinta transportadora desplaza cajas frente a una estación de inspección óptica (sensor infrarrojo de proximidad y cámara digital), un agente de visión artificial dictamina el estado del empaque y el sistema registra la evidencia fotográfica en la nube a la vez que acciona un mecanismo deflector para separar los productos defectuosos.
 
-El sistema captura imágenes de objetos transportados por una cinta, las envía a un modelo de Inteligencia Artificial alojado en un servidor privado de IA, y en función de la clasificación recibida (por color: verde, amarillo, rojo), acciona un servomotor que desvía los objetos anómalos a contenedores diferenciados.
-
----
-
-## ✅ Estado del Proyecto
-
-> **La etapa P3 (Diseño Electrónico, PCB e Integración Base) ha sido completada exitosamente con resultados validados experimentalmente. Actualmente el proyecto se encuentra en desarrollo de la etapa P4 (Diseño Mecánico Formal, Dashboard GUI y Control de Acceso).**
-
-### Hitos Alcanzados (Proyecto 3):
-
-| Hito | Estado |
-| :--- | :---: |
-| Diseño esquemático y PCB en KiCad | ✅ Completado |
-| Fabricación y ensamblaje de la PCB | ✅ Completado |
-| Validación de subsistemas individuales | ✅ Completado |
-| Integración total Software / Hardware | ✅ Completado |
-| Configuración del servidor de IA | ✅ Completado |
-| Pruebas finales con lote de 30 cajas | ✅ Completado |
-| Precisión de clasificación alcanzada | **93.33%** |
-
-### Hitos Planificados (Proyecto 4):
-
-| Hito / Novedad | Estado |
-| :--- | :---: |
-| Modelado 3D CAD de la estructura completa y planos técnicos | 🔄 En desarrollo |
-| Fabricación mecánica en PLA/PETG y perfilería de aluminio | 🔄 En desarrollo |
-| Dashboard Web embebido en ESP32-S3 (GUI RT & Control) | 🔄 En desarrollo |
-| Aplicación móvil Android (`Software/SnapshotP4.0`) | 🔄 En desarrollo |
-| Registro local en memoria (*logging*) | 🔄 En desarrollo |
-| Control de acceso y autenticación en interfaz web | 🔄 En desarrollo |
-
-### Subsistemas Verificados (P3):
-
-- 🟢 **Adquisición Óptica:** Cámara OV5640 operando en modo SVGA (800×600), fotogramas YUV422 almacenados en PSRAM (8 MB verificados).
-- 🟢 **Conectividad IoT:** Conexión WiFi estable, envío exitoso del payload (Base64 + binario JPEG) al webhook del servidor autoalojado. Respuestas del modelo de IA recibidas correctamente.
-- 🟢 **Motor DC y Cinta:** PWM a 20 kHz con 39.2% de duty cycle, desplazamiento uniforme gestionado por driver DRV8873.
-- 🟢 **Clasificación Mecánica:** Servomotor DFRobot SER0006 con respuesta precisa (0°, 90° o 180°) y tiempo de retención de 5 segundos.
-- 🟢 **Sensor de Proximidad:** Sensor IR E18-D80NK con detección fiable del paso de objetos.
+El alcance del **Primer Parcial del Proyecto 4** cierra la brecha entre la electrónica fabricada previamente en el Proyecto 3 y la operación física en planta, dotando al clasificador de:
+1. **Estructura mecánica formal:** Chasis, rodillos, banda de caucho y soportes diseñados en SolidWorks con planos constructivos acotados.
+2. **Tracción precisa con motor paso a paso:** Sustitución del motor DC de tracción por un motor paso a paso **NEMA 23** con controlador dedicado **L298N**, logrando un avance controlado con paradas repetibles de **1,2 s** frente a la cámara para eliminar el desenfoque por movimiento (*motion blur*).
+3. **Pipeline de visión en la nube:** Servidor autoalojado **n8n** que procesa la imagen con **OpenAI `gpt-4o-mini`**, almacena evidencias en **Google Drive** y registros numéricos en **Google Sheets**.
+4. **Dashboard web en tiempo real:** Interfaz de supervisión que lee la hoja de resultados cada 10 segundos, mostrando métricas, miniaturas de las cajas inspeccionadas y exportación a CSV.
 
 ---
 
-## 🚀 Novedades Planificadas — Proyecto 4
+## ✅ Estado del Proyecto — Hitos del 1er Parcial
 
-La nueva etapa del proyecto amplía las capacidades mecánicas, de control y de interacción usuario-sistema a través de tres pilares principales:
+> **El Primer Parcial del Proyecto 4 ha sido completado y validado experimentalmente con éxito en laboratorio.**
 
-### 1️⃣ Diseño Mecánico Formal
-- **Modelado 3D CAD:** Diseño tridimensional completo de la estructura en software CAD, abarcando el bastidor principal, soporte direccional para la cámara OV5640, sistema de desvío accionado por servomotor y guías ajustables de contenedores.
-- **Planos de Fabricación:** Elaboración de planos constructivos detallados con especificación rigurosa de tolerancias dimensionales y geométricas.
-- **Análisis Estructural:** Evaluación estructural básica para asegurar resistencia mecánica, estabilidad y comportamiento libre de vibraciones excesivas durante el movimiento de la cinta.
-- **Manufactura de Componentes:** Fabricación mediante **impresión 3D (PLA / PETG)** para piezas personalizadas y **perfilería de aluminio** estructural para el bastidor base.
+### Matriz de Hitos (P4 — Primer Parcial):
 
-### 2️⃣ Interfaz Gráfica de Usuario (GUI) para Comando y Control
-- **Dashboard Web Embebido:** Servidor web alojado directamente en el ESP32-S3, accesible mediante navegador desde cualquier dispositivo en la red local.
-- **Indicadores en Tiempo Real:** Monitorización continua del estado operativo (estado de conexión WiFi, ciclo de cinta, peticiones a la IA).
-- **Controles Manuales:** Mandos interactivos para inicio, parada y pausa de la cinta transportadora.
-- **Panel de Estadísticas:** Visualización gráfica de métricas de producción (conteo total de objetos, desglose por categoría: 🟢 verde, 🟡 amarillo, 🔴 rojo, y porcentaje de precisión).
-- **Aplicación Móvil Android (Snapshot P4.0):** Integración del proyecto de aplicación Android en `Software/SnapshotP4.0/` (con ejecutable `Cinta IA.apk`) para control e inspección remota.
-
-### 3️⃣ Mejoras Complementarias
-- **Registro Local en Memoria (Logging):** Almacenamiento en memoria no volátil de eventos del sistema, registros de fallos e historial de conteos.
-- **Control de Acceso Básico:** Sistema de autenticación de usuario para la interfaz web, asegurando que solo personal autorizado acceda a los mandos manuales y configuraciones.
+| Hito / Entregable | Estado | Observación |
+| :--- | :---: | :--- |
+| **Diseño mecánico en SolidWorks (CAD 3D)** | ✅ Completado | Modelos de bastidor, rodillos, engranajes y ensamble completo (`Ensamble.SLDASM`). |
+| **Planos técnicos acotados de fabricación** | ✅ Completado | Planos 2D en PDF de engranaje conductor, conducido, soporte lateral y ensamble general. |
+| **Tracción paso a paso NEMA 23 + L298N** | ✅ Completado | Paradas programadas de 1,2 s y avance exacto sin deslizamiento. |
+| **Transmisión por engranajes rectos (3.8:1)** | ✅ Completado | Impresión 3D en PLA de piñón (z=10) y corona (z=38), módulo 4 mm. |
+| **Flujo de Visión n8n + GPT-4o-mini** | ✅ Completado | Inferencia visual remota con latencia de 2,5 a 4,0 s. |
+| **Registro Cloud (Google Drive + Sheets)** | ✅ Completado | Almacenamiento automático de fotos y fila de metadatos por evento. |
+| **Dashboard Web de Supervisión** | ✅ Completado | Actualización continua cada 10 s, KPIs por estado, visor fotográfico y exportación CSV. |
+| **Ensamble y validación del prototipo físico** | ✅ Completado | Estructura de contrachapado y varillas DIN 975 operativa y verificada en banco. |
 
 ---
 
-## 📅 Cronograma de Actividades y Diagrama de Gantt
+## 🗺️ Esquema General del Sistema
 
-El desarrollo y seguimiento de las actividades de la etapa P4 se rige por la planificación temporal representada en el siguiente diagrama de Gantt:
+El sistema opera mediante la interacción coordinada de cinco bloques funcionales:
 
-<div align="center">
-
-![Diagrama de Gantt P4](DiagramadeGantt.png)
-
-</div>
-
-### Documentos de Planificación:
-- 📄 **[Cronograma de Actividades P4 (PDF)](Cronograma%20de%20actividades%20P4.pdf)** — Documento oficial detallado con las fases y asignación de tareas.
-- 📊 **[Cronograma de Actividades (Excel)](Cronograma%20de%20actividades.xlsx)** — Planilla interactiva para el seguimiento de avance del proyecto.
-
----
-
-## ⚙️ ¿Cómo Funciona?
-
-El lazo cerrado de control y toma de decisiones distribuidas opera en cinco etapas secuenciales:
-
-### 1️⃣ Transporte y Detección
-El **motor DC NOVAMAX 6V 800 RPM** desplaza los objetos sobre la cinta transportadora mediante modulación **PWM (20 kHz, 39.2% duty cycle)** gestionada por el driver de potencia **DRV8873SPWPRQ1**. Cuando el sensor infrarrojo de proximidad **E18-D80NK** detecta un objeto, el ESP32-S3 detiene la cinta inmediatamente.
-
-### 2️⃣ Captura en Borde (Edge Computing)
-La cámara **OV5640** captura un fotograma en resolución **SVGA (800×600)** en formato **YUV422**, que se almacena en la **PSRAM**. Posteriormente, se comprime a formato **JPEG** y se codifica en **Base64** para optimizar la transmisión.
-
-### 3️⃣ Inferencia Remota (IoT)
-El ESP32-S3 realiza una petición **HTTP POST Multipart** dirigida al webhook alojado en el servidor privado autoalojado de IA. El modelo de Inteligencia Artificial evalúa la imagen y retorna una estructura **JSON** con la clasificación por color.
-
-### 4️⃣ Actuación y Clasificación
-El microcontrolador parsea la respuesta JSON recibida y acciona el **servomotor DFRobot SER0006**:
-
-| Color | Significado | Acción del Servomotor | Duración |
-| :---: | :--- | :--- | :---: |
-| 🟢 **Verde** | Objeto válido / correcto | Permanece en **0°** — el objeto pasa libremente | — |
-| 🟡 **Amarillo** | Anomalía Tipo A | Gira a **90°** — desvía al contenedor A | 5 segundos |
-| 🔴 **Rojo** | Anomalía Tipo B | Gira a **180°** — desvía al contenedor B | 5 segundos |
-
-### 5️⃣ Reanudación
-Cumplido el tiempo de actuación, el servomotor retorna a su posición inicial (0°), la cinta transportadora se reactiva y el sistema se reconfigura para esperar el siguiente objeto.
-
----
-
-## 📊 Resultados Obtenidos
-
-Los siguientes resultados fueron obtenidos en la validación final del sistema con un lote de prueba de **30 cajas** (10 por cada categoría de color):
-
-### Precisión de Clasificación: **93.33%**
-
-| Categoría | Cajas Evaluadas | Aciertos | Errores | Precisión |
-| :---: | :---: | :---: | :---: | :---: |
-| 🟢 Verde (Válido) | 10 | 9 | 1 | 90% |
-| 🟡 Amarillo (Anomalía A) | 10 | 10 | 0 | **100%** |
-| 🔴 Rojo (Anomalía B) | 10 | 9 | 1 | 90% |
-| **Total** | **30** | **28** | **2** | **93.33%** |
-
-> **Nota:** Los 2 errores se atribuyeron a factores ópticos (múltiples objetos en el encuadre y problemas de enmarcado), **no a fallas de hardware**.
-
-### Rendimiento del Sistema
-
-| Parámetro | Valor Medido | Valor Teórico | Desviación |
-| :--- | :---: | :---: | :---: |
-| PWM del Motor DC | 20 kHz, 39.2% duty | — | Desplazamiento uniforme |
-| Tiempo de retención del servo | 5012 ms | 5000 ms | 0.24% |
-| Tensión línea 3.3V | 3.27 V | 3.3 V | Estable |
-| Pico de corriente soportado | 2.1 A | — | Sin caídas |
-| Tiempo de ciclo por caja | ~1 minuto | — | — |
+```
+                  +-------------------------------------------------------------+
+                  |                      UNIDAD DE CONTROL                      |
+                  |                Placa Propia ESP32-S3 (3.3V)                 |
+                  +--------------+------------------------------+---------------+
+                                 |                              |
+               Señal de Detención|                              |Control de Desvío
+               y Pulsos de Avance|                              |Pulsos PWM (0° / 180°)
+                                 v                              v
+            +--------------------+---------+          +---------+--------------------+
+            |      SUBSISTEMA TRACCIÓN     |          |       SUBSISTEMA DESVÍO      |
+            |     Driver L298N + NEMA 23   |          |    Servomotor SER0006        |
+            |  Engranajes PLA (Red. 3.8:1) |          | Brazo Deflector (20s retenc.)|
+            +--------------------+---------+          +------------------------------+
+                                 |
+                                 v
+                     [ Cinta Transportadora ] <=== [ Cajas en Tránsito ]
+                                 |
+                          Detección IR (E18-D80NK)
+                          Captura Foto (OV5640 SVGA)
+                                 |
+                                 v WiFi (HTTP POST Webhook)
+            +--------------------+---------------------------------------------------+
+            |                     SERVIDOR DE VISIÓN (n8n Autoalojado)               |
+            |             Agente IA de Visión (OpenAI gpt-4o-mini)                  |
+            +--------------------+------------------------------+--------------------+
+                                 |                              |
+                   Guarda Foto   v                 Guarda Fila  v
+                         +-------+-------+              +-------+-------+
+                         | Google Drive  |              | Google Sheets |
+                         +-------+-------+              +-------+-------+
+                                 |                              |
+                                 |            Lectura cada 10 s |
+                                 +--------------+---------------+
+                                                v
+                                 +--------------+---------------+
+                                 |     DASHBOARD WEB (GUI)      |
+                                 |  Supervisión en Tiempo Real  |
+                                 +------------------------------+
+```
 
 ---
 
 ## 🛠️ Arquitectura de Hardware
 
-El diseño electrónico de la PCB de **2 capas** fue optimizado mediante un plano de masa continuo y una estricta separación física entre las trazas de **potencia** (motores y actuadores) y **señal** (líneas de datos de la cámara y líneas de control del microcontrolador) para mitigar ruidos electromagnéticos parásitos.
+### 1. Subsistema Mecánico y Estructura (SolidWorks)
+La cinta transportadora se diseñó íntegramente en SolidWorks bajo criterios de rigidez, repetibilidad y desmontaje modular:
+- **Bastidor Lateral (`Tabla.SLDPRT` / [Soporte Lateral.pdf](Hardware/Diseno_Mecanico/Soporte%20Lateral.pdf)):** 2 placas de madera contrachapada de $700 \times 150\text{ mm}$ y $12\text{ mm}$ de espesor con perforaciones para varillas y rodamientos.
+- **Tirantes Transversales (`Varilla.SLDPRT`):** 7 varillas roscadas de acero al carbono galvanizado bajo norma **DIN 975** (M6), aportando alta rigidez torsional.
+- **Banda de Transporte (`Cinta.SLDPRT`):** Banda cerrada de caucho continuo con ancho útil de **200 mm**, compatible con cajas de hasta 150 mm.
+- **Transmisión por Engranajes Rectos en PLA (Módulo 4 mm):**
+  - **Engranaje Conductor (`Engranaje_C.SLDPRT` / [Engranaje_Conductor.pdf](Hardware/Diseno_Mecanico/Engranaje_Conductor.pdf)):** $z_1 = 10\text{ dientes}$, diámetro exterior $\varnothing 48.00\text{ mm}$, acople a eje del motor NEMA 23 de $\varnothing 8.00\text{ mm}$.
+  - **Engranaje Conducido (`engranaje_G.SLDPRT` / [engranaje_conducido.PDF](Hardware/Diseno_Mecanico/engranaje_conducido.PDF)):** $z_2 = 38\text{ dientes}$, diámetro exterior $\varnothing 160.00\text{ mm}$, acople a eje motriz de $\varnothing 6.00\text{ mm}$.
+  - **Relación de Reducción:** $i = 3.8:1$, cuadruplicando el par sobre el rodillo motriz y permitiendo una resolución de avance lineal de $\approx 0.165\text{ mm/paso}$.
+- **Planos Técnicos:** Disponibles en [Hardware/Diseno_Mecanico/](Hardware/Diseno_Mecanico/) con el ensamble general en [Cinta transportadora.pdf](Hardware/Diseno_Mecanico/Cinta%20transportadora.pdf) y el informe técnico detallado en [Informe_Diseno_Estructural_Mecanico.md](Hardware/Diseno_Mecanico/Informe_Diseno_Estructural_Mecanico.md).
 
-### Componentes Principales de la Placa
+### 2. Subsistema de Tracción (NEMA 23 + L298N)
+- **Motor:** Paso a paso híbrido bipolar NEMA 23 (**modelo 23HS5628**), ángulo de paso $1.8^\circ$ (200 pasos/rev) y torque nominal de **12.6 kgf-cm** (1.23 N·m).
+- **Controlador:** Driver tipo puente H bipolar **L298N**, alimentado desde una línea de potencia externa dedicada y comandado por señales lógicas de 3.3V desde la placa ESP32-S3.
 
-| Componente | Referencia | Cant. | Función Principal |
-| :--- | :--- | :---: | :--- |
-| **Microcontrolador** | ESP32-S3-WROOM-1-N16R8 | 1 | Núcleo del sistema: WiFi, control, manejo de PSRAM (8 MB) |
-| **Cámara** | OV5640 DVP | 1 | Captura SVGA 800×600, interfaz digital de video en paralelo |
-| **Driver de Motor** | DRV8873SPWPRQ1 | 2 | Puente H de grado automotriz para motor DC |
-| **Regulador LDO** | LD1117S33TR | 2 | Regulación lineal de voltaje a 3.3V para la etapa digital |
-| **Conector USB** | USB4510-03-1-A (Type-C) | 1 | Alimentación y programación, 16 pines SMD |
-| **Servomotor** | DFRobot SER0006 | 1 | Actuador de clasificación (0°/90°/180°) |
-| **Motor DC** | NOVAMAX 6V 800 RPM | 1 | Tracción de la cinta transportadora |
-| **Sensor IR** | E18-D80NK | 1 | Detección de proximidad por infrarrojos |
-| **Diodo Schottky** | SS14F-HF | — | Protección contra corrientes inversas |
-
-### Especificaciones Eléctricas Clave
-
-| Parámetro | Especificación |
-| :--- | :--- |
-| Alimentación de entrada | 5V vía USB Type-C |
-| Regulación lógica | 3.3V (LD1117S33TR × 2) |
-| Frecuencia PWM del motor | 20 kHz |
-| Duty cycle del motor | 39.2% |
-| Interfaz de cámara | DVP paralelo (YUV422) |
-| Resolución de captura | SVGA (800 × 600 px) |
-| Memoria PSRAM | 8 MB (verificada) |
-| Conectividad | WiFi 802.11 b/g/n (2.4 GHz) |
+### 3. Subsistema Electrónico de Control (PCB ESP32-S3)
+Se reutiliza la placa desarrollada y validada en el Proyecto 3 (alojada en [Hardware/Diseño final p3/](Hardware/Diseño%20final%20p3/)):
+- **Microcontrolador:** ESP32-S3-WROOM-1-N16R8 (Dual-core 240 MHz, 16 MB Flash, 8 MB PSRAM verificada).
+- **Cámara Óptica:** Módulo digital Omnivision **OV5640** conectado mediante interfaz de video en paralelo DVP (resolución de trabajo SVGA $800 \times 600$).
+- **Sensor de Presencia:** Sensor fotoeléctrico infrarrojo **E18-D80NK** enfocado a la zona de captura (tiempo de respuesta $< 50\text{ ms}$).
+- **Actuador de Desvío:** Servomotor **DFRobot SER0006** montado con brazo deflector mecánico a la salida del tramo de inspección.
 
 ---
 
-## 🤖 Servidor de IA — Infraestructura IoT
+## 🔄 Flujo de Operación y Lógica de Clasificación
 
-La clasificación de objetos se realiza mediante un flujo de automatización alojado en un servidor privado autoalojado, que actúa como puente entre el ESP32-S3 y el modelo de Inteligencia Artificial.
+El lazo de control opera de acuerdo a la siguiente secuencia automática:
 
-### Flujo de Comunicación
-
-```
-ESP32-S3  ──HTTP POST Multipart──▶  Servidor Autoalojado (Webhook)  ──▶  Modelo de IA
-                                                                       │
-ESP32-S3  ◀──── JSON { "color": "..." } ◀──────────────────────────────┘
-```
-
-### Detalles Técnicos
-
-| Aspecto | Detalle |
-| :--- | :--- |
-| **Plataforma** | Servidor autoalojado de IA |
-| **Protocolo** | HTTP POST Multipart |
-| **Payload de envío** | Base64 (texto) + Binario JPEG |
-| **Formato de respuesta** | JSON (`{ "color": "green" \| "yellow" \| "red" }`) |
-| **Latencia** | Dentro de los márgenes operativos previstos |
+1. **Avance Continuo:** El motor NEMA 23 hace avanzar la cinta transportadora de manera uniforme.
+2. **Detección Frontal:** El sensor infrarrojo E18-D80NK detecta la llegada del paquete e interrumpe el avance.
+3. **Parada y Captura:** La cinta se detiene exactamente durante **1,2 segundos**. La cámara OV5640 toma una fotografía nítida en SVGA almacenándola en la PSRAM.
+4. **Transmisión IoT:** El ESP32-S3 envía la imagen por WiFi al webhook de n8n mediante HTTP POST.
+5. **Inferencia Visual:** El agente de IA (`gpt-4o-mini`) analiza la morfología y condiciones del empaque, dictaminando la categoría:
+   - 🟢 **Verde (Buen Estado):** Caja intacta, correctamente sellada y lista para despacho.
+   - 🟡 **Amarillo (Sin Caja o No Empaque):** Falsa alarma, objeto extraño o cinta vacía.
+   - 🔴 **Rojo (Caja Dañada):** Paquete aplastado, roto, perforado o con defectos visibles.
+6. **Almacenamiento Cloud:** El flujo guarda la imagen en una carpeta compartida de **Google Drive** y registra una nueva fila en **Google Sheets** con timestamp, color y descripción detallada.
+7. **Acción del Servomotor:** El ESP32-S3 recibe la respuesta `[{color, descripcion}]` y ejecuta la maniobra:
+   - 🟢 **Verde:** El brazo deflector permanece a **0°** (la caja continúa sin desvío).
+   - 🟡 / 🔴 **Amarillo o Rojo:** El servomotor gira a **180°** y mantiene la posición de desvío durante **20 segundos** para enviar la pieza a la bandeja de rechazo.
+8. **Reanudación:** El servomotor retorna a posición neutra (0°) y la cinta reanuda la marcha.
 
 ---
 
-## 💻 Software y Firmware
+## 🤖 Infraestructura IoT y Servidor de Visión (n8n)
 
-### Bibliotecas Utilizadas
+El procesamiento cognitivo se delega íntegramente a un servidor local **n8n autoalojado** (*Workflow Proyecto 4*):
 
-| Biblioteca | Propósito |
-| :--- | :--- |
-| `esp_camera.h` | Inicialización y control de la cámara OV5640 vía DVP |
-| `img_converters.h` | Conversión y compresión de fotogramas a JPEG |
-| `WiFi.h` | Gestión de la conexión WiFi del ESP32-S3 |
-| `HTTPClient.h` | Peticiones HTTP POST hacia el webhook del servidor autoalojado |
-| `WiFiClientSecure.h` | Capa de seguridad TLS/HTTPS para las comunicaciones |
-| `ESP32Servo.h` | Control PWM del servomotor DFRobot SER0006 |
+```
+[Webhook HTTP] ──▶ [Recibir imagen y Nombrar] ──▶ [Base64 a Binario] ──▶ [AI Agent (gpt-4o-mini)]
+                                                                                │
+[Responder al Webhook: {color, desc}] ◀── [Limpiar Output Agente] ◀─────────────┘
+          │
+          ├──▶ [Subir a Google Drive]
+          └──▶ [Subir a Google Sheets]
+```
 
-### Algoritmos Implementados
+- **Modelo de Inferencia:** OpenAI `gpt-4o-mini` configurado con *system prompt* especializado en control de calidad industrial.
+- **Respuesta JSON:** Formato estandarizado `[ { "color": "verde" | "amarillo" | "rojo", "descripcion": "..." } ]`.
+- **Ventaja de la Arquitectura:** Libera al microcontrolador de tareas pesadas de redes neuronales, acelerando la toma de decisiones ($2.5 - 4.0\text{ s}$).
 
-| Función | Descripción |
-| :--- | :--- |
-| `b64_encode()` | Codificación Base64 nativa procesando el JPEG almacenado en PSRAM |
-| `sendToWebhook()` | Empaqueta Base64 + binario JPEG en formato Multipart para el webhook |
-| `parseColor()` | Parser JSON que extrae el campo `color` de la respuesta del servidor |
-| `moveServoForColor()` / `procesarColor()` | Control del actuador según la clasificación recibida |
+---
 
-### Firmware Principal
+## 🖥️ Interfaz de Usuario (Dashboard de Supervisión)
 
-- 📄 **`Software/P3_2P_code.txt`** — Firmware de producción completo (C++/Arduino para ESP32-S3)
+El monitoreo del sistema se realiza a través de un **Dashboard Web en Tiempo Real** de un solo archivo:
+- **Consulta Automática:** Sondea la planilla de Google Sheets (*Proyecto4 - Hoja 1*) cada **10 segundos**.
+- **Panel de KPIs:** Conteo total de cajas evaluadas, desglose por categoría (verde, amarillo, rojo) y cálculo porcentual.
+- **Tarjeta de Última Detección:** Muestra la fotografía en miniatura cargada desde Google Drive, el estado asignado, la descripción diagnóstica de la IA y el ángulo/tiempo aplicado por el servomotor.
+- **Historial y Exportación:** Tabla con las últimas 5 detecciones en vivo y botón para exportar todo el registro histórico acumulado a formato **CSV**.
+- **Accesos Directos:** Enlaces directos a la planilla en línea y a la carpeta de evidencias en Drive.
+- **Modo Seguro:** Opera en modo solo lectura para supervisión remota sin interferir en la máquina de estados del firmware.
 
-### Aplicación y Snapshot P4.0
+---
 
-- 📂 **`Software/SnapshotP4.0/`** — Proyecto Android de interfaz de usuario y control.
-  - 📱 **`Cinta IA.apk`** — Aplicación Android compilada para control del sistema.
+## 📊 Resultados Experimentales del Parcial
 
-### Scripts de Prueba (`Software/Pruebas/`)
+Durante las pruebas funcionales del prototipo integrado se validaron las siguientes métricas de desempeño:
 
-| Archivo | Descripción |
-| :--- | :--- |
-| `Prueba camara.txt` | Test de inicialización y captura de la cámara OV5640 |
-| `Prueba PSRAM.txt` | Diagnóstico de la PSRAM (8 MB confirmados funcionales) |
-| `Resultado camara.txt` | Log de resultados de la prueba de cámara |
-| `Resultados PSRAM.txt` | Log de resultados del diagnóstico de PSRAM |
+| Parámetro Operativo | Valor Medido | Valor Esperado / Criterio |
+| :--- | :---: | :---: |
+| **Tiempo de parada de cinta frente a cámara** | **1,2 s** | Repetible, sin desenfoque de imagen |
+| **Latencia de detección del sensor IR** | **< 50 ms** | Detención instantánea del NEMA 23 |
+| **Tiempo de respuesta inferencia n8n** | **2,5 a 4,0 s** | Dentro del ciclo de cinta previsto |
+| **Retención del servomotor en rechazo (180°)** | **20 s** | Desvío seguro al contenedor de descarte |
+| **Frecuencia de actualización del Dashboard** | **10 s** | Supervisión fluida de métricas Cloud |
+| **Resolución cinemática de la cinta** | **~0,165 mm/paso** | Posicionamiento milimétrico repetible |
 
 ---
 
 ## 💰 Costos del Proyecto
 
-| Concepto | Monto (USD) | Monto (PYG) |
-| :--- | :---: | :---: |
-| **Inversión total** | $62.12 | 397,009 |
-| **Costo por integrante** (×3) | $20.71 | 132,336 |
+La estructura de costos del prototipo se basa en una tasa oficial de referencia de **1 USD = 6.391 Gs.**:
 
-> El detalle completo de materiales, números de parte (MPN) y enlaces a distribuidores se encuentra en el archivo **`BOM.csv`**.
+### 1. Materiales y Herramientas Compradas (Incorporadas al Proyecto 4)
 
----
+| Descripción / Componente | MPN / Modelo | Cant. | Unitario (USD) | Total (USD) | Total (Gs.) |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **Motor paso a paso NEMA 23 (12.6 kgf-cm)** | 23HS5628 | 1 | 46,94 | 46,94 | 300.000 |
+| **Microcontrolador ESP32-S3** | ESP32-S3-WROOM-1-N16R8 | 2 | 8,72 | 17,44 | 111.459 |
+| **Módulo de cámara OV5640** | 5840 (Adafruit) | 1 | 9,95 | 9,95 | 63.590 |
+| **Capacitor electrolítico 100 uF** | EEE-FK1H101P | 6 | 0,76 | 4,56 | 29.143 |
+| **Servomotor 180°** | SER0006 | 1 | 3,63 | 3,63 | 23.199 |
+| **Capacitor cerámico 4,7 uF 0805** | CL21B475KOFNNNE | 6 | 0,25 | 1,50 | 9.587 |
+| **Diodo Schottky 40 V, 1 A** | SS14F-HF | 4 | 0,32 | 1,28 | 8.180 |
+| **Conector USB tipo C hembra** | USB4510-03-1-A | 1 | 0,84 | 0,84 | 5.368 |
+| **Capacitor cerámico 10 uF 0805** | CL21B106KOQNNNE | 6 | 0,14 | 0,84 | 5.368 |
+| **Capacitor cerámico 22 uF 0805** | CL21A226MQQNNNE | 6 | 0,13 | 0,78 | 4.985 |
+| **Resistencia 15 kOhm 0805** | RC0805FR-0715KL | 6 | 0,13 | 0,78 | 4.985 |
+| **Capacitor cerámico 2,2 uF 0805** | CL21B225KOFNNNE | 6 | 0,12 | 0,72 | 4.602 |
+| **Regulador LDO 3,3 V** | LD1117S33TR | 2 | 0,34 | 0,68 | 4.346 |
+| **Resistencia 10 kOhm 0805** | RC0805FR-0710KL | 6 | 0,11 | 0,66 | 4.218 |
+| **Capacitores y Resistencias SMD 0805 varios** | Pasivos estándar | — | — | 6,14 | 39.299 |
+| **SUBTOTAL COMPONENTES COMPRADOS** | — | — | — | **$96,06** | **644.219 Gs.** |
 
-## 🔧 Técnicas de Manufactura y Ensamblaje
+> *Costo por integrante (3 personas): **$32.02 USD (214.740 Gs.)**.*  
+> El desglose línea a línea con enlaces y números de parte se encuentra en el archivo [BOM.csv](BOM.csv).
 
-El proceso de fabricación y ensamblaje de la PCB siguió un flujo profesional de producción:
+### 2. Materiales y Herramientas Preexistentes o Prestadas (Sin costo incremental)
 
-1. **Aplicación de pasta de soldar** mediante esténcil de precisión para deposición homogénea.
-2. **Soldadura por reflujo** de componentes SMD sobre placa de calor (*hot plate reflow*).
-3. **Correcciones con estación de aire caliente** y aplicación de flux para retoques.
-4. **Soldadura manual THT** de componentes de inserción (USB Type-C, botones, conectores).
-5. **Inspección óptica y térmica** bajo microscopio estereoscópico de laboratorio.
-6. **Limpieza final** con alcohol isopropílico.
+| Descripción | Cantidad | Observaciones / Procedencia |
+| :--- | :---: | :--- |
+| **Placa propia ESP32-S3 con cámara OV5640** | 1 | Fabricada y validada en Proyecto 3 |
+| **Servomotor de desvío SER0006** | 1 | Reutilizado de la etapa previa |
+| **Controlador L298N para motor paso a paso** | 1 | Driver provisto para tracción |
+| **Notebook con servidor n8n autoalojado** | 1 | Estación de inferencia local |
+| **Licencia / estación SolidWorks CAD** | 1 | Laboratorio FIUNA |
+| **Multímetro y herramientas de banco/taller** | 1 | Instrumental de ensamblaje y prueba |
 
 ---
 
@@ -301,80 +255,66 @@ El proceso de fabricación y ensamblaje de la PCB siguió un flujo profesional d
 
 ```
 📦 Clasificador de Objetos/
-├── 📂 Hardware/                          # Proyecto completo en KiCad
-│   ├── 📂 Componentes/                   # Bibliotecas KiCad personalizadas (17 componentes)
-│   │   ├── ESP32-S3-WROOM2-N32R16V/
-│   │   ├── LDO lm1117/
-│   │   ├── driver_dvr8873/
-│   │   ├── diodo schottky/
-│   │   └── ... (resistencias, capacitores, headers, etc.)
-│   ├── 📂 Diseño final/                  # Archivos finales del proyecto KiCad
-│   │   └── 📂 Grupo15/                   # Proyecto final KiCad de producción
-│   │       ├── Grupo15.kicad_pcb         # Layout ruteado en KiCad (883 KB)
-│   │       ├── Grupo15.kicad_sch         # Esquemático en KiCad (396 KB)
-│   │       ├── Grupo15.kicad_pro         # Archivo de proyecto KiCad
-│   │       └── 📂 production/            # Archivos Gerber y de manufactura (BOM, positions, etc.)
-│   │           ├── Grupo15_Gerbers.zip   # Archivo zip con archivos Gerber
-│   │           ├── Grupo15_Gerbers_bom.csv
-│   │           └── ...
-│   ├── 📂 ESP32_S3_WROOM2_N32R16_29/     # Footprint y símbolo del ESP32-S3
-│   ├── 🖼️ Diseño.jpeg                    # Esquemático del diseño
-│   ├── 🖼️ pcb_ruteado.PNG                 # Layout de la PCB (ruteado final)
-│   ├── 🖼️ pcb_3d.PNG                     # Render 3D de la PCB (vista superior)
-│   ├── 🖼️ pcb_3d_1.png                   # Render 3D (visto sin componentes)
-│   └── 🖼️ pcb_3d_vistinferior.png        # Render 3D de la PCB (vista inferior)
-├── 📂 Software/                          # Firmware y aplicaciones
-│   ├── 📄 P3_2P_code.txt                 # Firmware de producción principal (ESP32-S3)
-│   ├── 📂 Pruebas/                       # Scripts y resultados de pruebas
-│   │   ├── Prueba camara.txt
-│   │   ├── Prueba PSRAM.txt
-│   │   ├── Resultado camara.txt
-│   │   ├── Resultados PSRAM.txt
-│   │   ├── 🖼️ Imagen_camara.jpeg
-│   │   └── 🖼️ Evidencia_fecha_de_resultado.jpeg
-│   └── 📂 SnapshotP4.0/                  # Aplicación Android (GUI P4 / Control)
-│       ├── 📱 Cinta IA.apk               # Ejecutable instalable en Android
-│       ├── 📄 build.gradle.kts           # Configuración Gradle
-│       └── ...                           # Código fuente Kotlin y recursos
-├── 📄 BOM.csv                            # Lista de materiales con costos y MPN
-├── 📄 Cronograma de actividades P4.pdf   # Cronograma oficial de la Etapa P4 (PDF)
-├── 📊 Cronograma de actividades.xlsx     # Planilla de seguimiento de actividades (Excel)
-├── 🖼️ DiagramadeGantt.png               # Diagrama de Gantt del proyecto P4
-├── 🖼️ diagrama-flujo.png                 # Diagrama de flujo del sistema
-├── 📄 LICENSE                            # Licencia MIT
-└── 📄 README.md                          # Este archivo
+├── 📂 Hardware/                                # Proyectos de diseño físico y electrónico
+│   ├── 📂 Diseno_Mecanico/                     # Diseño mecánico CAD y planos (P4)
+│   │   ├── 📄 Informe_Diseno_Estructural_Mecanico.md # Informe técnico mecánico detallado
+│   │   ├── 📄 Cinta transportadora.pdf         # Plano de ensamble general, despiece y lista de partes
+│   │   ├── 📄 Soporte Lateral.pdf              # Plano acotado de soporte lateral de madera contrachapada
+│   │   ├── 📄 Engranaje_Conductor.pdf          # Plano acotado de engranaje conductor (z=10, m=4)
+│   │   ├── 📄 engranaje_conducido.PDF          # Plano acotado de engranaje conducido (z=38, m=4)
+│   │   ├── 🧊 Ensamble.SLDASM                  # Ensamblaje 3D general en SolidWorks
+│   │   ├── 🧊 Cinta.SLDPRT                     # Modelo 3D de la banda transportadora
+│   │   ├── 🧊 Engranaje_C.SLDPRT               # Modelo 3D de engranaje conductor (PLA)
+│   │   ├── 🧊 engranaje_G.SLDPRT               # Modelo 3D de engranaje conducido (PLA)
+│   │   ├── 🧊 Tabla.SLDPRT                     # Modelo 3D de soporte lateral
+│   │   ├── 🧊 Varilla.SLDPRT                   # Modelo 3D de varilla roscada DIN 975
+│   │   └── 🧊 nema23.SLDPRT                    # Modelo 3D de motor paso a paso NEMA 23
+│   ├── 📂 Componentes/                         # Bibliotecas KiCad personalizadas
+│   ├── 📂 Diseño final p3/                     # Proyecto final KiCad de la PCB (Proyecto 3)
+│   │   └── 📂 Grupo15/                         # Esquemático, ruteado, producción y Gerbers
+│   ├── 📂 ESP32_S3_WROOM2_N32R16_29/           # Footprint y símbolo de la MCU
+│   ├── 🖼️ Diseño.jpeg                          # Esquemático general del circuito
+│   ├── 🖼️ pcb_ruteado.PNG                       # Ruteado y layout de 2 capas
+│   ├── 🖼️ pcb_3d.PNG                           # Render 3D superior de la PCB
+│   ├── 🖼️ pcb_3d_1.png                         # Render 3D superior sin componentes
+│   └── 🖼️ pcb_3d_vistinferior.png              # Render 3D inferior de la PCB
+├── 📂 Software/                                # Firmware y aplicaciones de control
+│   ├── 📄 P3_2P_code.txt                       # Firmware C++/Arduino para ESP32-S3
+│   ├── 📂 SnapshotP4.0/                        # Aplicación Android para inspección
+│   │   └── 📱 Cinta IA.apk                     # Instalador ejecutable Android
+│   └── 📂 Pruebas/                             # Scripts de validación de cámara y PSRAM
+├── 📄 BOM.csv                                  # Lista de materiales y costos actualizada (USD / Gs.)
+├── 📄 Informe_finalP3.pdf                      # Informe oficial completo del Proyecto 3
+├── 📄 Cronograma de actividades P4.pdf         # Cronograma oficial de la Etapa P4 (PDF)
+├── 📊 Cronograma de actividades.xlsx           # Planilla Excel de seguimiento
+├── 🖼️ DiagramadeGantt.png                     # Diagrama de Gantt oficial
+├── 🖼️ diagrama-flujo.png                       # Diagrama de flujo general del sistema
+├── 📄 LICENSE                                  # Licencia de código abierto MIT
+└── 📄 README.md                                # Documentación principal del repositorio
 ```
 
 ---
 
-## 🔄 Diagrama de Flujo
+## 👥 Autores (FIUNA — 2026)
 
-<div align="center">
+* **José Fabián Medina Dávalos** — [jfmedina@fiuna.edu.py](mailto:jfmedina@fiuna.edu.py)
+* **Sol Aramí Fernández Vargas** — [solfernandez@fiuna.edu.py](mailto:solfernandez@fiuna.edu.py)
+* **Gabriela Belén Orrego Arzamendia** — [gorrego@fiuna.edu.py](mailto:gorrego@fiuna.edu.py)
 
-![Diagrama de Flujo del Sistema](diagrama-flujo.png)
-
-</div>
-
----
-
-## 👥 Autores (MCT — 2026)
-
-* **José Fabián Medina Dávalos** - [jfmedina@fiuna.edu.py](mailto:jfmedina@fiuna.edu.py) 
-* **Sol Aramí Fernández Vargas** - [solfernandez@fiuna.edu.py](mailto:solfernandez@fiuna.edu.py) 
-* **Gabriela Belén Orrego Arzamendia** - [gorrego@fiuna.edu.py](mailto:gorrego@fiuna.edu.py) 
-
-*Facultad de Ingeniería, Universidad Nacional de Asunción (FIUNA)*
+**Facultad de Ingeniería — Universidad Nacional de Asunción (FIUNA)**  
+*Cátedra de Proyecto 4 — Carrera de Ingeniería Mecatrónica*  
+*Docentes:* Prof. Ing. Federico Gaona, MSc. (Teoría) & Prof. Ing. Esteban Fretes, MSc. (Práctica)
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto está licenciado bajo la **Licencia MIT**. Consulte el archivo [LICENSE](LICENSE) para más detalles.
+Este proyecto está distribuido bajo la **Licencia MIT**. Para más detalles, consulte el archivo [LICENSE](LICENSE).
 
 ---
 
 <div align="center">
 
-*Proyecto 3 & 4 — Mecatrónica (MCT) — FIUNA — Universidad Nacional de Asunción — 2026*
+*Clasificador Automático de Cajas con Visión Artificial — FIUNA — 2026*
 
 </div>

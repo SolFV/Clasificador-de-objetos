@@ -1,103 +1,160 @@
-# 📐 Informe Técnico: Diseño Estructural y Mecánico
-**Proyecto 4 — Cinta Transportadora de Indexación Intermitente por Mecanismo de Ginebra y Transmisión Sinfín-Corona**
-*Facultad de Ingeniería — Universidad Nacional de Asunción (FIUNA) | 2do Ciclo 2026*
-*Basado en el diseño CAD oficial: `Machine Design LAB`*
+# 📐 Informe Técnico: Diseño Estructural y Mecánico de la Cinta Transportadora
+**Proyecto 4 — Clasificador Automático de Cajas con Visión Artificial: Interfaz de Usuario y Estructura Mecánica de Cinta Transportadora**  
+*Facultad de Ingeniería — Universidad Nacional de Asunción (FIUNA)*  
+*Cátedra: Proyecto 4 (2do Ciclo 2026) | Profesores: Prof. Ing. Federico Gaona, MSc. — Prof. Ing. Esteban Fretes, MSc.*  
+*Autores: José Fabián Medina Dávalos, Sol Aramí Fernández Vargas, Gabriela Belén Orrego Arzamendia*
 
 ---
 
-## 1. 📌 Descripción General del Diseño Mecánico (`Machine Design LAB`)
+## 1. 📌 Descripción General y Alcance del Diseño Mecánico
 
-El presente informe técnico describe en detalle la arquitectura mecánica, análisis cinemático y estructural del prototipo de clasificación de objetos sobre cinta transportadora, integrando el diseño formal de la carpeta **`Machine Design LAB`** (`intermittent indexing conveyor using geneva Mechanism.SLDASM`).
+El presente informe técnico describe la arquitectura estructural, componentes de ensamble, cálculos cinemáticos y planos de fabricación del sistema mecánico de la cinta transportadora del **Proyecto 4 (Primer Parcial)**.
 
-![Vista Isométrica del Ensamblado Mecánico](cinta_mecanismo_ginebra_isometrico.png)
+En esta etapa, el sistema sustituye el accionamiento previo por motor DC por un **motor paso a paso NEMA 23 (23HS5628)** acoplado mediante un par de engranajes rectos de reducción diseñados en **SolidWorks**. Esta solución garantiza un avance controlado, repetible y con paradas programadas de **1,2 s** frente a la estación de inspección óptica (cámara OV5640 y sensor infrarrojo E18-D80NK), suprimiendo cualquier desenfoque por movimiento (*motion blur*) durante la captura de imágenes.
 
----
-
-## 2. ⚙️ Sub-sistemas Mecánicos Principales
-
-El diseño mecánico se divide en tres subsistemas fuertemente acoplados:
-
-### 2.1 Sub-sistema de Transmisión por Tornillo Sinfín y Corona (*Worm Gear Transmission*)
-- **Motor Eléctrico de Tracción (`motor.SLDPRT`):** Montado horizontalmente sobre la placa base (`base.SLDPRT`).
-- **Tornillo Sinfín (`worm.SLDPRT`):** Acoplado en sentido axial al eje motor. Proporciona una alta relación de reducción cinemática y una propiedad clave: **bloqueo irreversible (auto-frenado)** en ausencia de torque motor.
-- **Corona / Engranaje Helicoidal (`gear.SLDPRT`):** Engranaje en latón/bronce accionado por el sinfín, transmitiendo movimiento de rotación al eje secundario del mecanismo de Ginebra.
-
-### 2.2 Sub-sistema de Indexación Intermitente por Mecanismo de Ginebra (*Geneva Mechanism*)
-- **Disco de Bloqueo e Impulsor (`locking_disc^Geneva_Mechanism.SLDPRT`):** Porta el pin de arrastre (*drive pin*) y el perfil cóncavo de retención.
-- **Rueda de Ginebra de 6 Ranuras (`Geneva_wheel^Geneva_Mechanism.SLDPRT`):** Rueda en cruz de Malta de 6 posiciones ($N = 6$), acoplada directamente al eje principal del rodillo de tracción (`shaft.SLDPRT`).
-- **Función Operativa:** Convierte la rotación continua del motor en un **movimiento intermitente paso a paso**. Esto garantiza que cada objeto se detenga de forma absoluta durante $0.67\text{ segundos}$ frente a la cámara OV5640, permitiendo la captura de imágenes sin desenfoque por movimiento (*motion blur*).
-
-![Detalle del Transmisión Sinfín-Corona y Ginebra](cinta_mecanismo_ginebra_detalle.png)
-
-### 2.3 Sub-sistema de Cinta Transportadora (*Conveyor Belt Assembly*)
-- **Chasis y Placas Laterales (`side parts.SLDPRT`):** Placas estructurales de contención lateral en aleación de aluminio que alojan las chumaceras de los rodillos.
-- **Rodillos de Tracción y Retorno (`conveyor roller.SLDPRT`):** Cilindros metálicos de precisión $\varnothing 40\text{ mm}$ montados sobre ejes de acero calibrado ($\varnothing 8\text{ mm}$).
-- **Banda Transportadora (`conveyor Belt`):** Cinta continua de PVC vulcanizado con superficie antideslizante para el transporte de las cajas (`box.SLDPRT`).
+```
++-----------------------------------------------------------------------------------------+
+|                                ESTRUCTURA MECÁNICA GENERAL                              |
+|                                                                                         |
+|  [ Motor NEMA 23 ]                                                                      |
+|        |                                                                                |
+|  [ Engranaje Conductor (z=10, m=4) ]                                                    |
+|        | (Reducción 3.8:1)                                                              |
+|  [ Engranaje Conducido (z=38, m=4) ]                                                    |
+|        |                                                                                |
+|  [ Eje y Rodillo Motriz ] ======> [ Banda de Caucho (200 mm) ] ======> [ Rodillo Tensor ]
+|                                    (Chasis: Madera Contrachapada + 7 Varillas DIN 975)  |
++-----------------------------------------------------------------------------------------+
+```
 
 ---
 
-## 3. 📐 Análisis Cinemático del Mecanismo de Ginebra (6 Ranuras)
+## 2. ⚙️ Criterios de Diseño y Requerimientos Funcionales
 
-### 3.1 Ángulo de Avanza e Indexación
-Para una rueda de Ginebra de $N = 6$ ranuras:
-
-$$\theta_{\text{paso}} = \frac{360^\circ}{N} = \frac{360^\circ}{6} = 60^\circ \text{ de rotación del rodillo por pulso}$$
-
-### 3.2 Tiempos de Movimiento y Reposo (Dwell Time)
-Considerando una velocidad de entrada de la corona de $N_{\text{corona}} = 60\text{ RPM}$ ($1.0\text{ rev/s}$):
-
-- **Periodo del ciclo completo ($T_{\text{ciclo}}$):** $1.0\text{ s}$ por revolución del disco impulsor.
-- **Ángulo de contacto del pin:** $\beta = 120^\circ$.
-- **Tiempo de avance / movimiento ($t_{\text{mov}}$):**
-
-$$t_{\text{mov}} = \frac{\beta}{360^\circ} \cdot T_{\text{ciclo}} = \frac{120^\circ}{360^\circ} \cdot 1.0\text{ s} = 0.33\text{ s}$$
-
-- **Tiempo de detención absoluta / reposo ($t_{\text{pausa}}$):**
-
-$$t_{\text{pausa}} = \frac{360^\circ - \beta}{360^\circ} \cdot T_{\text{ciclo}} = \frac{240^\circ}{360^\circ} \cdot 1.0\text{ s} = 0.67\text{ s}$$
-
-> **Ventaja en Clasificación por IA:** El tiempo de reposo de $0.67\text{ s}$ es suficiente para que la cámara OV5640 capture el fotograma $800 \times 600\text{ px}$, el ESP32-S3 envíe la imagen vía WiFi al webhook de IA, y se reciba el resultado de clasificación previo al siguiente movimiento.
+1. **Ancho Útil de Transporte:** Banda de $200\text{ mm}$ de ancho para alojar con holgura paquetes y cajas de hasta $150\text{ mm}$.
+2. **Control de Avance y Posicionamiento:** Capacidad de detener la cinta de manera instantánea y repetible al activarse el sensor IR E18-D80NK (latencia $< 50\text{ ms}$).
+3. **Rigidez Torsional y Alineación:** Chasis autoportante de madera contrachapada fijado mediante varillas roscadas pasantes de acero métrico, garantizando paralelismo estricto entre ejes.
+4. **Mantenimiento y Desmontaje:** Facilidad para cambiar o tensar la banda sin requerir el desarmado total del bastidor.
+5. **Manufactura Híbrida y Accesible:**
+   - Estructura portante en madera contrachapada mecanizada.
+   - Transmisión cinemática fabricada mediante **impresión 3D (PLA)**.
+   - Elementos de unión normalizados (acero DIN 975 grado comercial).
 
 ---
 
-## 4. 🧮 Cálculos Estructurales y Torques
+## 3. 🧩 Descripción de Componentes Mecánicos
 
-### 4.1 Torque de Transmisión y Reducción del Sinfín-Corona
-Suponiendo un conjunto sinfín-corona con relación $i = 30:1$ y eficiencia mecánica $\eta = 0.75$:
+### 3.1 Chasis y Laterales del Bastidor (`Tabla.SLDPRT` / `Soporte Lateral.pdf`)
+- **Material:** Madera contrachapada de primera calidad de $12.00\text{ mm}$ de espesor.
+- **Dimensiones Principales:** Longitud total $700.00\text{ mm}$, altura $150.00\text{ mm}$.
+- **Puntos de Sujeción y Fijación:**
+  - 6 perforaciones pasantes de $\varnothing 6.50\text{ mm}$ distribuidas a lo largo del soporte para las varillas roscadas estructurales (con cotas de espaciado $175.00\text{ mm}$, $350.00\text{ mm}$, etc.).
+  - Alojamiento de ejes principales con orificios de $\varnothing 8.00\text{ mm}$ situados a $25.00\text{ mm}$ y $58.04\text{ mm}$ de referencias clave.
+  - Guías y ranuras de ajuste para el tensado de la banda en el rodillo conducido.
 
-$$\tau_{\text{salida}} = \tau_{\text{motor}} \cdot i \cdot \eta$$
+### 3.2 Tirantes Estructurales Transversales (`Varilla.SLDPRT`)
+- **Norma y Material:** Acero al carbono galvanizado según norma **DIN 975**.
+- **Cantidad:** 7 varillas roscadas M6.
+- **Función:** Unen rígidamente ambos laterales de madera contrachapada mediante tuercas y arandelas exteriores e interiores, proporcionando una estructura tipo celosía de alta resistencia a la flexión y torsión.
 
-Para un motor DC standard con $\tau_{\text{motor}} = 0.05\text{ N}\cdot\text{m}$:
-
-$$\tau_{\text{salida}} = 0.05 \cdot 30 \cdot 0.75 = 1.125\text{ N}\cdot\text{m} \approx 11.47\text{ kg}\cdot\text{cm}$$
-
-### 4.2 Deflexión Estructural del Chasis Lateral (`side parts`)
-Bajo la carga combinada del rodillo, tensión de banda y peso de paquetes ($F_{\text{total}} = 30\text{ N}$):
-
-$$\delta_{\text{máx}} = \frac{F \cdot L^3}{48 \cdot E \cdot I_x} \approx 0.05\text{ mm} \ll 0.1\text{ mm}$$
-
-**Factor de Seguridad:** $SF > 8.5$, garantizando rigidez permanente y cero desalineación de los ejes paralelos.
-
----
-
-## 5. 📂 Inventario de Componentes CAD (`Machine Design LAB`)
-
-| Archivo CAD | Tipo / Descripción | Función |
-| :--- | :--- | :--- |
-| `intermittent indexing conveyor using geneva Mechanism.SLDASM` | Ensamblaje General SolidWorks | Prototipo completo integrado. |
-| `Geneva_wheel^Geneva_Mechanism.SLDPRT` | Rueda de Ginebra 6 Ranuras | Elemento conducido intermitente. |
-| `locking_disc^Geneva_Mechanism.SLDPRT` | Disco Bloqueador + Pin | Elemento impulsor de la Ginebra. |
-| `worm.SLDPRT` | Tornillo Sinfín | Eje de entrada del motor. |
-| `gear.SLDPRT` | Corona de Bronce | Engranaje de reducción. |
-| `conveyor roller.SLDPRT` | Rodillo de Cinta | Tracción de la banda de PVC. |
-| `side parts.SLDPRT` | Placas Laterales Chasis | Estructura portante principal. |
-| `base.SLDPRT` | Bancada Base | Soporte de motor y transmisiones. |
-| `box.SLDPRT` | Paquete / Caja Objeto | Elemento a clasificar sobre la cinta. |
+### 3.3 Banda Transportadora y Rodillos (`Cinta.SLDPRT`)
+- **Banda:** Banda plana vulcanizada de caucho continuo con cara superior antideslizante de $200\text{ mm}$ de ancho útil.
+- **Rodillos:** Cilindros concéntricos montados sobre rodamientos de bolas de bajo rozamiento para asegurar rotación suave bajo carga.
 
 ---
 
-## 6. 📅 Cronograma y Próximos Pasos Mecánicos
+## 4. ⚙️ Sistema de Transmisión por Engranajes Cilíndricos Rectos
 
-1. ✅ **Finalizado (24/08/2026):** Integración formal del modelo CAD de Ginebra e indexación de `Machine Design LAB`.
-2. 🔄 **En Progreso (25/08/2026 - 31/08/2026):** Exportación de planos constructivos 2D en SolidWorks (`.SLDDRW` / PDF).
-3. 🔜 **Próximo (01/09/2026 - 14/09/2026):** Fabricación de repuestos en impresión 3D en PETG de la rueda de Ginebra y disco bloqueador.
+Para vincular el motor NEMA 23 al eje del rodillo motriz se diseñó una etapa reductora de engranajes de dientes rectos, modelados en SolidWorks e impresos en PLA de alta densidad de relleno.
+
+### 4.1 Parámetros Geométricos del Engranaje Conductor (`Engranaje_C.SLDPRT` / `Engranaje_Conductor.pdf`)
+
+| Parámetro Geométrico | Símbolo | Valor de Diseño |
+| :--- | :---: | :---: |
+| **Módulo** | $m$ | $4\text{ mm}$ |
+| **Número de Dientes** | $z_1$ | $10$ |
+| **Ángulo de Presión** | $\alpha$ | $20^\circ$ |
+| **Diámetro Primitivo** | $d_{p1} = m \cdot z_1$ | $40.00\text{ mm}$ |
+| **Diámetro Exterior** | $d_{e1} = d_{p1} + 2m$ | $48.00\text{ mm}$ |
+| **Espesor del Diente (Ancho de Cara)** | $b_1$ | $12.00\text{ mm}$ |
+| **Altura Total con Cubo** | $h_{\text{cubo}}$ | $22.00\text{ mm}$ |
+| **Diámetro del Cubo** | $d_{\text{cubo}}$ | $16.00\text{ mm}$ |
+| **Diámetro de Eje (Eje Motor NEMA 23)** | $d_{\text{eje1}}$ | $\varnothing 8.00\text{ mm}$ |
+| **Tipo de Perfil** | — | Evolvente / Involuta estándar |
+| **Material** | — | Polímero termoplástico (PLA) |
+
+### 4.2 Parámetros Geométricos del Engranaje Conducido (`engranaje_G.SLDPRT` / `engranaje_conducido.PDF`)
+
+| Parámetro Geométrico | Símbolo | Valor de Diseño |
+| :--- | :---: | :---: |
+| **Módulo** | $m$ | $4\text{ mm}$ |
+| **Número de Dientes** | $z_2$ | $38$ |
+| **Ángulo de Presión** | $\alpha$ | $20^\circ$ |
+| **Diámetro Primitivo** | $d_{p2} = m \cdot z_2$ | $152.00\text{ mm}$ |
+| **Diámetro Exterior** | $d_{e2} = d_{p2} + 2m$ | $160.00\text{ mm}$ |
+| **Espesor del Diente** | $b_2$ | $12.00\text{ mm}$ |
+| **Diámetro de Eje** | $d_{\text{eje2}}$ | $\varnothing 6.00\text{ mm}$ |
+| **Tipo de Perfil** | — | Evolvente / Involuta estándar |
+| **Material** | — | Polímero termoplástico (PLA) |
+
+### 4.3 Relación de Reducción y Distancia Entre Centros
+
+* **Relación de transmisión ($i$):**
+  $$i = \frac{z_2}{z_1} = \frac{38}{10} = 3.8:1$$
+
+* **Distancia teórica entre centros ($a$):**
+  $$a = \frac{d_{p1} + d_{p2}}{2} = \frac{40\text{ mm} + 152\text{ mm}}{2} = \frac{192\text{ mm}}{2} = 96.00\text{ mm}$$
+
+> **Efecto cinemático:** La relación de reducción $3.8:1$ multiplica el torque entregado al rodillo motriz por un factor de casi 4, permitiendo mover la cinta con suavidad y posicionar la caja de manera controlada frente a la cámara.
+
+---
+
+## 5. 🧮 Cinemática de Tracción y Parada
+
+### 5.1 Motor Paso a Paso NEMA 23 (Modelo 23HS5628)
+- **Ángulo de paso nativo:** $1.8^\circ \pm 5\%$ ($200\text{ pasos/revolución}$).
+- **Torque de retención nominal:** $12.6\text{ kgf}\cdot\text{cm}$ ($1.23\text{ N}\cdot\text{m}$).
+- **Controlador:** L298N (puente H bipolar).
+
+### 5.2 Desplazamiento Lineal por Paso
+Para un diámetro del rodillo motriz $D_{\text{rodillo}} \approx 40\text{ mm}$:
+- Circunferencia del rodillo motriz:
+  $$C_{\text{rodillo}} = \pi \cdot D_{\text{rodillo}} \approx 3.1416 \times 40\text{ mm} \approx 125.66\text{ mm}$$
+- Desplazamiento lineal del rodillo motriz por revolución del motor:
+  $$\Delta x_{\text{rev\_motor}} = \frac{C_{\text{rodillo}}}{i} = \frac{125.66\text{ mm}}{3.8} \approx 33.07\text{ mm/rev}$$
+- Resolución de avance por paso del motor ($1.8^\circ$):
+  $$\Delta x_{\text{paso}} = \frac{33.07\text{ mm}}{200\text{ pasos}} \approx 0.165\text{ mm/paso}$$
+
+Esta precisión milimétrica ($0.165\text{ mm}$ por paso completo) garantiza que cuando el sensor fotoeléctrico infrarrojo **E18-D80NK** detecta el borde de ataque de la caja, la cinta se detiene exactamente en el centro del encuadre óptico de la cámara **OV5640**.
+
+---
+
+## 6. 📋 Lista de Partes y Ensamble General (`Ensamble.SLDASM` / `Cinta transportadora.pdf`)
+
+| Ítem | N° de Parte / Nombre | Descripción y Material | Cantidad | Plano Técnico / Modelo |
+| :---: | :--- | :--- | :---: | :--- |
+| **1** | `Soporte Lateral` | Madera Contrachapada e = 12 mm | 2 | `Soporte Lateral.pdf` / `Tabla.SLDPRT` |
+| **2** | `Varilla Roscada` | Acero al carbono DIN 975 M6 | 7 | `Varilla.SLDPRT` |
+| **3** | `Motor Paso a Paso` | NEMA 23 (23HS5628) | 1 | `nema23.SLDPRT` |
+| **4** | `Engranaje Conducido` | Polímero (PLA) z=38, m=4 | 1 | `engranaje_conducido.PDF` / `engranaje_G.SLDPRT` |
+| **5** | `Engranaje Conductor` | Polímero (PLA) z=10, m=4 | 1 | `Engranaje_Conductor.pdf` / `Engranaje_C.SLDPRT` |
+| **6** | `Cinta` | Banda cerrada de Caucho (200 mm útil) | 1 | `Cinta.SLDPRT` |
+| **7** | `Ensamble General` | Conjunto montado de cinta transportadora | 1 | `Cinta transportadora.pdf` / `Ensamble.SLDASM` |
+
+---
+
+## 7. 📸 Registro Fotográfico del Prototipo Construido
+
+Durante la fase de validación física del prototipo se registraron las siguientes observaciones de ensamble:
+- **Estructura Portante:** Soportes de madera contrachapada alineados rígidamente por las 7 varillas roscadas de acero M6 con doble tuerca de apriete.
+- **Montaje del Motor:** El NEMA 23 se encuentra asegurado firmemente al lateral de la cinta, con su eje de $\varnothing 8\text{ mm}$ acoplado al engranaje conductor de 10 dientes en PLA.
+- **Engrane:** El engranaje conducido de 38 dientes engrana directamente con el conductor, verificándose un juego entre dientes (*backlash*) adecuado para evitar atoramientos y desgaste prematuro.
+- **Respuesta Operativa:** Paradas programadas de **1,2 s** perfectamente repetibles y estables ante la detección por el sensor IR, sin deslizamiento apreciable de la banda de caucho.
+
+---
+
+## 8. 🎯 Conclusiones del Diseño Mecánico (1er Parcial)
+
+1. La sustitución del motor DC por el motor paso a paso **NEMA 23** con transmisión de engranajes $3.8:1$ solucionó de raíz el problema de la inercia y la repetibilidad del frenado.
+2. El uso de engranajes de módulo $m = 4\text{ mm}$ proporciona robustez suficiente ante los esfuerzos dinámicos de arranque y frenado brusco.
+3. Como mejora para las siguientes fases se contempla incorporar un tensor dinámico con resorte para la banda de caucho y una cubierta protectora para los engranajes de transmisión.
